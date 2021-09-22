@@ -5,12 +5,17 @@
 class Game {
 public:
 	Game();
-	void handleInput(SDL_Event& event);
+	void handleInput(SDL_Event &event);
 	void update();
-	void setState(GameState* state);
-	GameState* getState(GameState* state);
+
+	void setState(GameState *state);
+	void introState();
+	void playingState();
+	GameState *getState(GameState *state);
 
 	bool quit_;
 private:
-	GameState* state_;
+	GameState *state_;
+	GameState *introstate_;
+	GameState *playingstate_;
 };

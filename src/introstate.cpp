@@ -9,12 +9,12 @@ extern RenderWindow window;
 
 IntroState::IntroState()
 :text_({0, 0}, {0, 0}, 50) {
+	state_name_ = "IntroState";
 	text_.openFont("res/fixedsys.ttf", 50);
-	text_.loadFontTexture({0, 0, 0}, "Yo");
-	std::cout << initialised_;
+	text_.loadFontTexture({0, 0, 0}, state_name_.c_str());
 }
 
-void IntroState::handleInput(Game& game, SDL_Event& event) {
+void IntroState::handleInput(Game &game, SDL_Event &event) {
 		switch (event.type) {
 			case SDL_QUIT:
 				game.quit_ = true;
@@ -22,9 +22,10 @@ void IntroState::handleInput(Game& game, SDL_Event& event) {
 		}
 }
 
-void IntroState::update(Game& game) {
+void IntroState::update(Game &game) {
 	window.clear(255, 255, 255, 0xFF);
 	window.render(text_);
 	window.display();
 	window.showWindow();
+	game.playingState();
 }

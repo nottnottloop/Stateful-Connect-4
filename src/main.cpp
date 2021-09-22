@@ -7,6 +7,7 @@
 
 #include "Game.hpp"
 #include "IntroState.hpp"
+#include "PlayingState.hpp"
 #include "RenderWindow.hpp"
 #include "Entity.hpp"
 
@@ -38,7 +39,6 @@ int main(int argc, char* argv[]) {
 	SDL_Event event;
 
 	Game game;
-	game.setState(new IntroState);
 
 	//attempt feebly to get rid of white flash on load
 	window.clear();
