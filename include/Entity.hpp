@@ -37,10 +37,9 @@ public:
 	double getScale();
 	std::tuple<SDL_Rect, SDL_Rect> renderBgRectInfo();
 	std::tuple<SDL_Rect, SDL_Rect> renderFgRectInfo();
-public:
-	Vector2f offset_;
 protected:
 	Vector2f pos_;
+	Vector2f offset_;
 	SDL_Texture* bg_tex_;
 	SDL_Rect bg_frame_;
 	SDL_Texture* fg_tex_;

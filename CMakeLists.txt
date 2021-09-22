@@ -10,6 +10,7 @@ set (SOURCES
 	src/game.cpp
 	src/introstate.cpp
 	src/playingstate.cpp
+	src/text.cpp
 )
 
 add_executable (Connect4 ${SOURCES})

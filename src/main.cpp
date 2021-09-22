@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "Game.hpp"
+#include "IntroState.hpp"
 #include "RenderWindow.hpp"
 #include "Entity.hpp"
 
@@ -33,29 +34,21 @@ int main(int argc, char* argv[]) {
 			printf("Mix_Init: Failed to init required ogg and mod support!\n");
 			printf("Mix_Init: %s\n", Mix_GetError());
 	}
-	bool quit = false;
 
 	SDL_Event event;
+
 	Game game;
+	game.setState(new IntroState);
 
 	//attempt feebly to get rid of white flash on load
 	window.clear();
 	window.display();
 	window.showWindow();
 
-	while (!quit) {
-		while (SDL_PollEvent(&event)) {
-			switch (event.type) {
-				case SDL_QUIT:
-					quit = true;
-					break;
-				case SDL_KEYDOWN:
-					break;
-		}
-		window.display();
-		window.clear(255, 255, 255, 0xFF);
-		window.showWindow();
-		}
+	while (!game.quit_) {
+		SDL_PollEvent(&event);
+		game.handleInput(event);
+		game.update();
 	}
 
 	window.cleanUp();
