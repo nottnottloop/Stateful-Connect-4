@@ -1,3 +1,4 @@
+#include <iostream>
 #include <SDL.h>
 #include "IntroState.hpp"
 #include "Text.hpp"
@@ -5,6 +6,13 @@
 #include "Game.hpp"
 
 extern RenderWindow window;
+
+IntroState::IntroState()
+:text_({0, 0}, {0, 0}, 50) {
+	text_.openFont("res/fixedsys.ttf", 50);
+	text_.loadFontTexture({0, 0, 0}, "Yo");
+	std::cout << initialised_;
+}
 
 void IntroState::handleInput(Game& game, SDL_Event& event) {
 		switch (event.type) {
@@ -15,7 +23,8 @@ void IntroState::handleInput(Game& game, SDL_Event& event) {
 }
 
 void IntroState::update(Game& game) {
-	window.display();
 	window.clear(255, 255, 255, 0xFF);
+	window.render(text_);
+	window.display();
 	window.showWindow();
 }

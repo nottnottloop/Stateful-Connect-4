@@ -2,6 +2,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <tuple>
+#include "Text.hpp"
 
 class RenderWindow 
 {
@@ -12,6 +13,7 @@ public:
 	void clear();
 	void clear(int r, int g, int b, int a);
 	void clear(SDL_Color, int a);
+	void render(Text text) const;
 	void render(std::tuple<SDL_Rect, SDL_Rect> rects, SDL_Texture* tex) const;
 	void display() const;
 	void showWindow();

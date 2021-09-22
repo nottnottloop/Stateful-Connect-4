@@ -4,6 +4,7 @@
 #include <iostream>
 #include <tuple>
 #include "RenderWindow.hpp"
+#include "Text.hpp"
 
 RenderWindow::RenderWindow(const char* p_title, const int p_w, const int p_h)
 	:window_(NULL), renderer_(NULL) {
@@ -46,6 +47,11 @@ void RenderWindow::clear(int r, int g, int b, int a) {
 void RenderWindow::clear(SDL_Color color, int a) {
 	SDL_SetRenderDrawColor(renderer_, color.r, color.g, color.b, a);        
 	SDL_RenderClear(renderer_);
+}
+
+void RenderWindow::render(Text text) const {
+	SDL_Rect text_rect = text.renderTextInfo();
+	SDL_RenderCopy(renderer_, text.getFgTex(), nullptr, &text_rect);
 }
 
 void RenderWindow::render(std::tuple<SDL_Rect, SDL_Rect> rects, SDL_Texture* tex) const {
