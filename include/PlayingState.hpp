@@ -6,8 +6,11 @@
 class PlayingState : public GameState {
 public:
 	PlayingState();
-	virtual void handleInput(Game &game, SDL_Event &event);
-	virtual void update(Game &game);
+	void handleInput(Game &game, SDL_Event &event);
+	void update(Game &game);
+	void nextPlayerToMove();
+	void updatePlayerMoveText();
 private:
-	Text text_;
+	bool player2_to_move_;
+	Text player_to_move_text_;
 };

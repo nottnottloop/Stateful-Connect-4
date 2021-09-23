@@ -27,5 +27,4 @@ void IntroState::update(Game &game) {
 	window.render(text_);
 	window.display();
 	window.showWindow();
-	game.playingState();
 }
