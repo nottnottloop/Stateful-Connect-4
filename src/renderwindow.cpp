@@ -49,6 +49,10 @@ void RenderWindow::clear(SDL_Color color, int a) {
 	SDL_RenderClear(renderer_);
 }
 
+void RenderWindow::changeColor(SDL_Color color) {
+	SDL_SetRenderDrawColor(renderer_, color.r, color.g, color.b, color.a);        
+}
+
 void RenderWindow::render(Text text) const {
 	SDL_Rect text_rect = text.renderTextInfo();
 	SDL_RenderCopy(renderer_, text.getFgTex(), nullptr, &text_rect);
@@ -58,8 +62,14 @@ void RenderWindow::render(std::tuple<SDL_Rect, SDL_Rect> rects, SDL_Texture* tex
 	SDL_RenderCopy(renderer_, tex, &std::get<0>(rects), &std::get<1>(rects));
 }
 
-void RenderWindow::renderLine(int x1, int y1, int x2, int y2) {
+void RenderWindow::renderLine(int x1, int y1, int x2, int y2, SDL_Color color) {
+	changeColor(color);
 	SDL_RenderDrawLine(renderer_, x1, y1, x2, y2);
+}
+
+void RenderWindow::renderRect(SDL_Rect rect, SDL_Color color) {
+	changeColor(color);
+	SDL_RenderFillRect(renderer_, &rect);
 }
 
 void RenderWindow::display() const {

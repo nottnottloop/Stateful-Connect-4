@@ -4,6 +4,7 @@
 #include "Text.hpp"
 #include "RenderWindow.hpp"
 #include "Game.hpp"
+#include "Constants.hpp"
 
 extern RenderWindow window;
 
@@ -21,9 +22,9 @@ void PlayingState::nextPlayerToMove() {
 
 void PlayingState::updatePlayerMoveText() {
 	if (player2_to_move_) {
-		player_to_move_text_.loadFontTexture({0, 255, 0}, "Player 2");
+		player_to_move_text_.loadFontTexture(GREEN, "Player 2");
 	} else {
-		player_to_move_text_.loadFontTexture({255, 0, 0}, "Player 1");
+		player_to_move_text_.loadFontTexture(RED, "Player 1");
 	}
 }
 
@@ -44,6 +45,7 @@ void PlayingState::handleInput(Game& game, SDL_Event& event) {
 void PlayingState::update(Game& game) {
 	window.clear(255, 255, 255, 0xFF);
 	window.render(player_to_move_text_);
+	window.renderRect({100, 100, 5, 100}, BLACK);
 	window.display();
 	window.showWindow();
 }
