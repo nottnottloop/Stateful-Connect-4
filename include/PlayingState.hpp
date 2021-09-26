@@ -19,6 +19,7 @@ public:
 private:
 	bool player2_to_move_;
 	Text player_to_move_text_;
+	std::vector<Text> numbers_text_;
 	int mouse_x_;
 	int mouse_y_;
 	bool mouse_down_;

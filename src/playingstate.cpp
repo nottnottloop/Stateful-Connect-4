@@ -9,9 +9,16 @@
 extern RenderWindow window;
 
 PlayingState::PlayingState()
-:player_to_move_text_({768, 700}, {0, 0}, 50), player2_to_move_(false) {
+:player_to_move_text_({768, 715}, {0, 0}, 50), player2_to_move_(false) {
 	state_name_ = "PlayingState";
 	player_to_move_text_.openFont("res/fixedsys.ttf", 50);
+	for (int i = 0; i < 7; i++) {
+		numbers_text_.push_back({{BOARD_X_OFFSET + CELL_SIZE / 2 - LINE_THICKNESS + static_cast<float>(CELL_SIZE * (i + 1)), 0}, {0, 0}, 35});
+		char number[3];
+		sprintf(number, "%d", i + 1);
+		numbers_text_[i].openFont("res/fixedsys.ttf", 35);
+		numbers_text_[i].loadFontTexture(BLACK, number);
+	}
 
 	blue_tex_ = window.loadTexture("res/blue.png");
 	red_tex_ = window.loadTexture("res/red.png");
@@ -148,6 +155,10 @@ void PlayingState::update(Game& game) {
 
 	//text to show which player's move it is
 	window.render(player_to_move_text_);
+	//label each column with a number that can be pressed as an alternative to mouse controls
+	for (int i = 0; i < 7; i++) {
+		window.render(numbers_text_[i]);
+	}
 
 	//color bg before rendering grid
 	for (int i = 1; i < NUM_ROWS + 1; i++) {

@@ -26,4 +26,4 @@ constexpr int LINE_THICKNESS = 5;
 constexpr int NUM_ROWS = 6;
 constexpr int NUM_COLS = 7;
 constexpr int BOARD_X_OFFSET = (SCREEN_WIDTH / 2) - ((CELL_SIZE * (NUM_COLS + 2)) / 2);
-constexpr int BOARD_Y_OFFSET = (SCREEN_HEIGHT / 2) - ((CELL_SIZE * (NUM_ROWS + 2)) / 2);
+constexpr int BOARD_Y_OFFSET = (SCREEN_HEIGHT / 2) - ((CELL_SIZE * (NUM_ROWS + 2)) / 2) + 30;
