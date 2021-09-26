@@ -75,12 +75,23 @@ void PlayingState::placeToken(int col) {
 }
 
 bool PlayingState::checkValidMouseLocation() {
-	if (mouse_x_ > BOARD_X_OFFSET + CELL_SIZE && mouse_x_ < (CELL_SIZE * (NUM_COLS + 2)) + LINE_THICKNESS) {
+	if (mouse_x_ > BOARD_X_OFFSET + CELL_SIZE && mouse_x_ < BOARD_X_OFFSET + (CELL_SIZE * (NUM_COLS + 1)) + LINE_THICKNESS) {
 		printf("Valid\n");
 		return true;
 	}
 		printf("Invalid\n");
 	return false;
+}
+
+int PlayingState::parseMouseLocation() {
+	int mouse_relative = mouse_x_ - BOARD_X_OFFSET;
+	int position = (mouse_relative / CELL_SIZE) - 1;
+	//clicking on the final line will crash everything unless we do this, or some other amazing solution that we won't bother with
+	if (position == 7) {
+		position = 6;
+	}
+	printf("%d\n", position);
+	return position;
 }
 
 void PlayingState::handleInput(Game& game, const SDL_Event& event) {
@@ -118,16 +129,15 @@ void PlayingState::handleInput(Game& game, const SDL_Event& event) {
 				case SDL_MOUSEMOTION:
 				case SDL_MOUSEBUTTONDOWN:
 				case SDL_MOUSEBUTTONUP:
+					SDL_GetMouseState(&mouse_x_, &mouse_y_);
 					if (event.type == SDL_MOUSEBUTTONDOWN) {
-						SDL_GetMouseState(&mouse_x_, &mouse_y_);
 						mouse_down_ = true;
 					} else if (event.type == SDL_MOUSEBUTTONUP && mouse_down_) {
 						mouse_down_ = false;
 						if (checkValidMouseLocation()) {
-
+							//parseMouseLocation();
+							placeToken(parseMouseLocation());
 						}
-					} else {
-						mouse_down_ = false;
 					}
 					break;
 		}

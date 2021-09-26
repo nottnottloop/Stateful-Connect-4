@@ -15,7 +15,7 @@ public:
 	void updatePlayerMoveText();
 	void placeToken(int col);
 	bool checkValidMouseLocation();
-	bool parseMouseLocation();
+	int parseMouseLocation();
 private:
 	bool player2_to_move_;
 	Text player_to_move_text_;
