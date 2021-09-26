@@ -8,7 +8,7 @@
 extern RenderWindow window;
 
 IntroState::IntroState()
-:text_({0, 0}, {0, 0}, 50) {
+:text_({0, 0}, {0, 0}) {
 	state_name_ = "IntroState";
 	text_.openFont("res/fixedsys.ttf", 50);
 	text_.loadFontTexture({0, 0, 0}, state_name_.c_str());

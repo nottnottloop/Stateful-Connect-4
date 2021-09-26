@@ -5,6 +5,7 @@
 #include "Text.hpp"
 #include "Entity.hpp"
 #include "Constants.hpp"
+#include "BasicButton.hpp"
 
 class PlayingState : public GameState {
 public:
@@ -42,6 +43,7 @@ private:
 	SDL_Texture *blue_arrow_;
 	std::vector<std::vector<Entity>> board_;
 	std::vector<Entity> display_arrows_;
+	std::vector<BasicButton> buttons_;
 #ifdef DEBUG_CONTROLS
 	bool player_color_lock_;
 #endif

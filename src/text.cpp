@@ -6,8 +6,8 @@
 
 extern RenderWindow window;
 
-Text::Text(Vector2f pos, Vector2f offset, int size)
-: Entity(pos, offset, {0, 0, 0, 0}, {0, 0, 0, 0}, nullptr, nullptr), size_(size) {
+Text::Text(Vector2f pos, Vector2f offset)
+: Entity(pos, offset, {0, 0, 0, 0}, {0, 0, 0, 0}, nullptr, nullptr) {
 }
 
 void Text::loadFontTexture(SDL_Color color, const char* text) {
@@ -35,12 +35,4 @@ SDL_Rect Text::renderCenteredTextInfo() {
 
 void Text::openFont(const char* file_path, int size) {
 	font_ = TTF_OpenFont(file_path, size);
-}
-
-void Text::setSize(int size) {
-	size_ = size;
-}
-
-int Text::getSize() {
-	return size_;
 }

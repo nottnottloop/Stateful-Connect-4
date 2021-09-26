@@ -67,6 +67,14 @@ void RenderWindow::render(std::tuple<SDL_Rect, SDL_Rect> rects, SDL_Texture* tex
 	SDL_RenderCopy(renderer_, tex, &std::get<0>(rects), &std::get<1>(rects));
 }
 
+void RenderWindow::render(BasicButton &button) {
+	changeColor(button.background_color_);
+	SDL_RenderFillRect(renderer_, &button.rect_);
+	changeColor(button.border_color_);
+	SDL_RenderDrawRect(renderer_, &button.rect_);
+	render(button.text_);
+}
+
 void RenderWindow::renderLine(int x1, int y1, int x2, int y2, SDL_Color color) {
 	changeColor(color);
 	SDL_RenderDrawLine(renderer_, x1, y1, x2, y2);

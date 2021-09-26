@@ -5,6 +5,7 @@
 #include "RenderWindow.hpp"
 #include "Game.hpp"
 #include "Constants.hpp"
+#include "BasicButton.hpp"
 #ifdef DEBUG_CONTROLS
 #include <random>
 #endif
@@ -12,7 +13,7 @@
 extern RenderWindow window;
 
 PlayingState::PlayingState()
-:player_to_move_text_({768, 715}, {0, 0}, 50), player2_to_move_(false), won_(false), drawn_(false), win_text_({SCREEN_WIDTH / 2, 300}, {0, 0}, 50), draw_text_({0, 300}, {0, 0}, 50) {
+:player_to_move_text_({768, 715}, {0, 0}), player2_to_move_(false), won_(false), drawn_(false), win_text_({SCREEN_WIDTH / 2, 250}, {0, 0}), draw_text_({SCREEN_WIDTH / 2, 250}, {0, 0}) {
 	state_name_ = "PlayingState";
 
 	player_to_move_text_.openFont("res/fixedsys.ttf", 50);
@@ -24,7 +25,7 @@ PlayingState::PlayingState()
 	red_arrow_ = window.loadTexture("res/redarrow.png");
 
 	for (int i = 0; i < 7; i++) {
-		numbers_text_.push_back({{BOARD_X_OFFSET + CELL_SIZE / 2 - LINE_THICKNESS + static_cast<float>(CELL_SIZE * (i + 1)) - 7, 0}, {0, 0}, 35});
+		numbers_text_.push_back({{BOARD_X_OFFSET + CELL_SIZE / 2 - LINE_THICKNESS + static_cast<float>(CELL_SIZE * (i + 1)) - 7, 0}, {0, 0}});
 		display_arrows_.push_back({{BOARD_X_OFFSET + CELL_SIZE + static_cast<float>(CELL_SIZE * i), 25}, {0, 0}, {0, 0, 100, 100}, {0, 0, 100, 100}, nullptr, red_arrow_});
 		char number[2];
 		sprintf(number, "%d", i + 1);
@@ -48,6 +49,8 @@ PlayingState::PlayingState()
 			//}
 		}
 	}
+
+	buttons_.push_back(BasicButton({SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2, 200, 100}, {0, 0}, WHITE, GREEN, 5, "Play Again"));
 
 #ifdef DEBUG_CONTROLS
 	player_color_lock_ = false;
@@ -349,7 +352,8 @@ void PlayingState::update(Game& game) {
 		}
 	}
 	if (won_ || drawn_) {
-		window.renderBlendedRect({0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}, {0, 0, 0, 200});
+		window.renderBlendedRect({0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}, {0, 0, 0, 220});
+		window.render(buttons_[0]);
 	}
 	if (won_) {
 		window.render(win_text_, true);
