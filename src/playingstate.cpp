@@ -301,6 +301,10 @@ void PlayingState::handleInput(Game& game, const SDL_Event& event) {
 						current_mouse_location_ = -1;
 					}
 					if (event.type == SDL_MOUSEBUTTONDOWN) {
+						if (buttons_[0].clicked(mouse_x_, mouse_y_)) {
+							resetGame();
+							break;
+						}
 						mouse_down_ = true;
 					} else if (event.type == SDL_MOUSEBUTTONUP && mouse_down_) {
 						mouse_down_ = false;
