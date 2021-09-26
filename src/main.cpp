@@ -10,9 +10,8 @@
 #include "PlayingState.hpp"
 #include "RenderWindow.hpp"
 #include "Entity.hpp"
+#include "Constants.hpp"
 
-constexpr int SCREEN_WIDTH = 1024;
-constexpr int SCREEN_HEIGHT = 768;
 
 RenderWindow window("Connect 4", SCREEN_WIDTH, SCREEN_HEIGHT);
 
