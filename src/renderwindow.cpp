@@ -53,8 +53,13 @@ void RenderWindow::changeColor(SDL_Color color) {
 	SDL_SetRenderDrawColor(renderer_, color.r, color.g, color.b, color.a);        
 }
 
-void RenderWindow::render(Text text) const {
-	SDL_Rect text_rect = text.renderTextInfo();
+void RenderWindow::render(Text text, bool centered) const {
+	SDL_Rect text_rect;
+	if (centered) {
+		text_rect = text.renderCenteredTextInfo();
+	} else {
+		text_rect = text.renderTextInfo();
+	}
 	SDL_RenderCopy(renderer_, text.getFgTex(), nullptr, &text_rect);
 }
 
@@ -70,6 +75,13 @@ void RenderWindow::renderLine(int x1, int y1, int x2, int y2, SDL_Color color) {
 void RenderWindow::renderRect(SDL_Rect rect, SDL_Color color) {
 	changeColor(color);
 	SDL_RenderFillRect(renderer_, &rect);
+}
+
+void RenderWindow::renderBlendedRect(SDL_Rect rect, SDL_Color color) {
+	changeColor(color);
+	SDL_SetRenderDrawBlendMode(renderer_, SDL_BLENDMODE_BLEND);
+	SDL_RenderFillRect(renderer_, &rect);
+	SDL_SetRenderDrawBlendMode(renderer_, SDL_BLENDMODE_NONE);
 }
 
 void RenderWindow::display() const {

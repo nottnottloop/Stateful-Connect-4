@@ -29,7 +29,7 @@ SDL_Rect Text::renderCenteredTextInfo() {
 	int tex_w = 0;
 	int tex_h = 0;
 	SDL_QueryTexture(fg_tex_, nullptr, nullptr, &tex_w, &tex_h);
-	SDL_Rect dst_rect = { getPos().x - tex_w, getPos().y, tex_w, tex_h };
+	SDL_Rect dst_rect = { getPos().x - tex_w / 2, getPos().y, tex_w, tex_h };
 	return dst_rect;
 }
 

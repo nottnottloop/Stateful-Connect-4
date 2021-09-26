@@ -14,10 +14,11 @@ public:
 	void clear(int r, int g, int b, int a);
 	void clear(SDL_Color, int a);
 	void changeColor(SDL_Color color);
-	void render(Text text) const;
+	void render(Text text, bool centered=false) const;
 	void render(std::tuple<SDL_Rect, SDL_Rect> rects, SDL_Texture* tex) const;
 	void renderLine(int x1, int y1, int x2, int y2, SDL_Color color);
 	void renderRect(SDL_Rect rect, SDL_Color color);
+	void renderBlendedRect(SDL_Rect rect, SDL_Color color);
 	void display() const;
 	void showWindow();
 	void renderRect(int r, int g, int b);

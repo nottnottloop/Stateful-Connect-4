@@ -16,7 +16,7 @@ public:
 	SDL_Texture *getArrowTex();
 	void placeToken(int col);
 	void checkWinOrDraw();
-	void win();
+	void win(bool red_won);
 	void draw();
 	void resetGame();
 	bool checkValidMouseLocation();
@@ -30,6 +30,8 @@ private:
 	bool player2_to_move_;
 	Text player_to_move_text_;
 	std::vector<Text> numbers_text_;
+	Text win_text_;
+	Text draw_text_;
 	int mouse_x_;
 	int mouse_y_;
 	int current_mouse_location_;

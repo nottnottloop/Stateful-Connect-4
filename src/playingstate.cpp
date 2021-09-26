@@ -12,9 +12,12 @@
 extern RenderWindow window;
 
 PlayingState::PlayingState()
-:player_to_move_text_({768, 715}, {0, 0}, 50), player2_to_move_(false), won_(false), drawn_(false) {
+:player_to_move_text_({768, 715}, {0, 0}, 50), player2_to_move_(false), won_(false), drawn_(false), win_text_({SCREEN_WIDTH / 2, 300}, {0, 0}, 50), draw_text_({0, 300}, {0, 0}, 50) {
 	state_name_ = "PlayingState";
+
 	player_to_move_text_.openFont("res/fixedsys.ttf", 50);
+	win_text_.openFont("res/fixedsys.ttf", 50);
+	draw_text_.openFont("res/fixedsys.ttf", 50);
 	blue_tex_ = window.loadTexture("res/blue.png");
 	red_tex_ = window.loadTexture("res/red.png");
 	blue_arrow_ = window.loadTexture("res/bluearrow.png");
@@ -23,7 +26,7 @@ PlayingState::PlayingState()
 	for (int i = 0; i < 7; i++) {
 		numbers_text_.push_back({{BOARD_X_OFFSET + CELL_SIZE / 2 - LINE_THICKNESS + static_cast<float>(CELL_SIZE * (i + 1)) - 7, 0}, {0, 0}, 35});
 		display_arrows_.push_back({{BOARD_X_OFFSET + CELL_SIZE + static_cast<float>(CELL_SIZE * i), 25}, {0, 0}, {0, 0, 100, 100}, {0, 0, 100, 100}, nullptr, red_arrow_});
-		char number[3];
+		char number[2];
 		sprintf(number, "%d", i + 1);
 		numbers_text_[i].openFont("res/fixedsys.ttf", 35);
 		numbers_text_[i].loadFontTexture(BLACK, number);
@@ -111,6 +114,7 @@ void PlayingState::placeToken(int col) {
 
 void PlayingState::checkWinOrDraw() {
 	bool empty_space_found = false;
+	bool red_won = false;
 	for (int i = 0; i < NUM_ROWS; i++) {
 		for (int j = 0; j < NUM_COLS; j++) {
 			if (!board_[i][j].getVisible()) {
@@ -121,6 +125,9 @@ void PlayingState::checkWinOrDraw() {
 				if (board_[i][j].getVisible() && board_[i][j+1].getVisible() && board_[i][j+2].getVisible() && board_[i][j+3].getVisible()) {
 					if (board_[i][j].getFgTex() == board_[i][j+1].getFgTex() && board_[i][j+1].getFgTex() == board_[i][j+2].getFgTex() && board_[i][j+2].getFgTex() == board_[i][j+3].getFgTex()) {
 						won_ = true;
+						if (board_[i][j].getFgTex() == red_tex_) {
+							red_won = true;
+						}
 					}
 				}
 			}
@@ -129,6 +136,9 @@ void PlayingState::checkWinOrDraw() {
 				if (board_[i][j].getVisible() && board_[i+1][j].getVisible() && board_[i+2][j].getVisible() && board_[i+3][j].getVisible()) {
 					if (board_[i][j].getFgTex() == board_[i+1][j].getFgTex() && board_[i+1][j].getFgTex() == board_[i+2][j].getFgTex() && board_[i+2][j].getFgTex() == board_[i+3][j].getFgTex()) {
 						won_ = true;
+						if (board_[i][j].getFgTex() == red_tex_) {
+							red_won = true;
+						}
 					}
 				}
 			}
@@ -137,6 +147,9 @@ void PlayingState::checkWinOrDraw() {
 				if (board_[i][j].getVisible() && board_[i+1][j+1].getVisible() && board_[i+2][j+2].getVisible() && board_[i+3][j+3].getVisible()) {
 					if (board_[i][j].getFgTex() == board_[i+1][j+1].getFgTex() && board_[i+1][j+1].getFgTex() == board_[i+2][j+2].getFgTex() && board_[i+2][j+2].getFgTex() == board_[i+3][j+3].getFgTex()) {
 						won_ = true;
+						if (board_[i][j].getFgTex() == red_tex_) {
+							red_won = true;
+						}
 					}
 				}
 			}
@@ -146,21 +159,30 @@ void PlayingState::checkWinOrDraw() {
 				if (board_[i][j].getVisible() && board_[i-1][j+1].getVisible() && board_[i-2][j+2].getVisible() && board_[i-3][j+3].getVisible()) {
 					if (board_[i][j].getFgTex() == board_[i-1][j+1].getFgTex() && board_[i-1][j+1].getFgTex() == board_[i-2][j+2].getFgTex() && board_[i-2][j+2].getFgTex() == board_[i-3][j+3].getFgTex()) {
 						won_ = true;
+						if (board_[i][j].getFgTex() == red_tex_) {
+							red_won = true;
+						}
 					}
 				}
 			}
 		}
 	}
 	if (won_) {
-		win();
+		win(red_won);
 	}
 	if (!empty_space_found) {
 		draw();
 	}
 }
 
-void PlayingState::win() {
-	printf("WIN\n");
+void PlayingState::win(bool red_won) {
+	if (red_won) {
+		win_text_.loadFontTexture(RED, "Player 1 wins!");
+		printf("RED WIN\n");
+	} else {
+		win_text_.loadFontTexture(BLUE, "Player 2 wins!");
+		printf("BLUE WIN\n");
+	}
 }
 
 void PlayingState::draw() {
@@ -202,7 +224,7 @@ void PlayingState::nearlyFillBoard() {
 	srand(time(0));
 	for (int i = 0; i < NUM_ROWS; i++) {
 		for (int j = 0; j < NUM_COLS - 1; j++) {
-			int num = rand() % 4;
+			int num = (rand() % 4) + 2;
 			switch (num) {
 				case 0:
 					board_[i][j].setFgTex(red_tex_);
@@ -279,7 +301,7 @@ void PlayingState::handleInput(Game& game, const SDL_Event& event) {
 						mouse_down_ = true;
 					} else if (event.type == SDL_MOUSEBUTTONUP && mouse_down_) {
 						mouse_down_ = false;
-						if (checkValidMouseLocation()) {
+						if (checkValidMouseLocation() && !won_ && !drawn_) {
 							//parseMouseLocation();
 							placeToken(parseMouseLocation());
 							checkWinOrDraw();
@@ -297,7 +319,7 @@ void PlayingState::update(Game& game) {
 	//label each column with a number that can be pressed as an alternative to mouse controls
 	for (int i = 0; i < 7; i++) {
 		window.render(numbers_text_[i]);
-		if (current_mouse_location_ != -1) {
+		if (current_mouse_location_ != -1 && !won_ && !drawn_) {
 			window.render(display_arrows_[current_mouse_location_].renderFgRectInfo(), getArrowTex());
 		}
 	}
@@ -325,6 +347,15 @@ void PlayingState::update(Game& game) {
 		for (int j = 0; j < NUM_COLS; j++) {
 			window.render(board_[i][j].renderFgRectInfo(), board_[i][j].getFgTex());
 		}
+	}
+	if (won_ || drawn_) {
+		window.renderBlendedRect({0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}, {0, 0, 0, 200});
+	}
+	if (won_) {
+		window.render(win_text_, true);
+	}
+	if (drawn_) {
+		window.render(draw_text_, true);
 	}
 	window.display();
 	window.showWindow();
