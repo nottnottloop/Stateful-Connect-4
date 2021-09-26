@@ -12,16 +12,20 @@ PlayingState::PlayingState()
 :player_to_move_text_({768, 715}, {0, 0}, 50), player2_to_move_(false) {
 	state_name_ = "PlayingState";
 	player_to_move_text_.openFont("res/fixedsys.ttf", 50);
+	blue_tex_ = window.loadTexture("res/blue.png");
+	red_tex_ = window.loadTexture("res/red.png");
+	blue_arrow_ = window.loadTexture("res/bluearrow.png");
+	red_arrow_ = window.loadTexture("res/redarrow.png");
+
 	for (int i = 0; i < 7; i++) {
-		numbers_text_.push_back({{BOARD_X_OFFSET + CELL_SIZE / 2 - LINE_THICKNESS + static_cast<float>(CELL_SIZE * (i + 1)), 0}, {0, 0}, 35});
+		numbers_text_.push_back({{BOARD_X_OFFSET + CELL_SIZE / 2 - LINE_THICKNESS + static_cast<float>(CELL_SIZE * (i + 1)) - 7, 0}, {0, 0}, 35});
+		display_arrows_.push_back({{BOARD_X_OFFSET + CELL_SIZE + static_cast<float>(CELL_SIZE * i), 25}, {0, 0}, {0, 0, 100, 100}, {0, 0, 100, 100}, nullptr, red_arrow_});
 		char number[3];
 		sprintf(number, "%d", i + 1);
 		numbers_text_[i].openFont("res/fixedsys.ttf", 35);
 		numbers_text_[i].loadFontTexture(BLACK, number);
 	}
 
-	blue_tex_ = window.loadTexture("res/blue.png");
-	red_tex_ = window.loadTexture("res/red.png");
 	board_.resize(NUM_ROWS);
 	for (int i = 0; i < NUM_ROWS; i++) {
 		board_[i].reserve(NUM_COLS);
@@ -39,6 +43,7 @@ PlayingState::PlayingState()
 		}
 	}
 
+	current_mouse_location_ = 0;
 	mouse_down_ = false;
 	updatePlayerMoveText();
 }
@@ -53,6 +58,14 @@ void PlayingState::updatePlayerMoveText() {
 		player_to_move_text_.loadFontTexture(BLUE, "Player 2");
 	} else {
 		player_to_move_text_.loadFontTexture(RED, "Player 1");
+	}
+}
+
+SDL_Texture *PlayingState::getArrowTex() {
+	if (player2_to_move_) {
+		return blue_arrow_;
+	} else {
+		return red_arrow_;
 	}
 }
 
@@ -83,10 +96,10 @@ void PlayingState::placeToken(int col) {
 
 bool PlayingState::checkValidMouseLocation() {
 	if (mouse_x_ > BOARD_X_OFFSET + CELL_SIZE && mouse_x_ < BOARD_X_OFFSET + (CELL_SIZE * (NUM_COLS + 1)) + LINE_THICKNESS) {
-		printf("Valid\n");
+		//printf("Valid\n");
 		return true;
 	}
-		printf("Invalid\n");
+		//printf("Invalid\n");
 	return false;
 }
 
@@ -97,7 +110,7 @@ int PlayingState::parseMouseLocation() {
 	if (position == 7) {
 		position = 6;
 	}
-	printf("%d\n", position);
+	//printf("%d\n", position);
 	return position;
 }
 
@@ -137,6 +150,11 @@ void PlayingState::handleInput(Game& game, const SDL_Event& event) {
 				case SDL_MOUSEBUTTONDOWN:
 				case SDL_MOUSEBUTTONUP:
 					SDL_GetMouseState(&mouse_x_, &mouse_y_);
+					if (checkValidMouseLocation()) {
+						current_mouse_location_ = parseMouseLocation();
+					} else {
+						current_mouse_location_ = -1;
+					}
 					if (event.type == SDL_MOUSEBUTTONDOWN) {
 						mouse_down_ = true;
 					} else if (event.type == SDL_MOUSEBUTTONUP && mouse_down_) {
@@ -158,6 +176,9 @@ void PlayingState::update(Game& game) {
 	//label each column with a number that can be pressed as an alternative to mouse controls
 	for (int i = 0; i < 7; i++) {
 		window.render(numbers_text_[i]);
+		if (current_mouse_location_ != -1) {
+			window.render(display_arrows_[current_mouse_location_].renderFgRectInfo(), getArrowTex());
+		}
 	}
 
 	//color bg before rendering grid
