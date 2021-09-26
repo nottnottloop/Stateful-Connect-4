@@ -14,7 +14,7 @@ IntroState::IntroState()
 	text_.loadFontTexture({0, 0, 0}, state_name_.c_str());
 }
 
-void IntroState::handleInput(Game &game, SDL_Event &event) {
+void IntroState::handleInput(Game &game, const SDL_Event &event) {
 		switch (event.type) {
 			case SDL_QUIT:
 				game.quit_ = true;

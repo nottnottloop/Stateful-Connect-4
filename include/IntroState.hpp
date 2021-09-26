@@ -7,7 +7,7 @@
 class IntroState : public GameState {
 public:
 	IntroState();
-	void handleInput(Game &game, SDL_Event &event);
+	void handleInput(Game &game, const SDL_Event &event);
 	void update(Game &game);
 private:
 	Text text_;

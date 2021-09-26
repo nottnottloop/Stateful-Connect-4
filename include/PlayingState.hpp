@@ -9,14 +9,19 @@
 class PlayingState : public GameState {
 public:
 	PlayingState();
-	void handleInput(Game &game, SDL_Event &event);
+	void handleInput(Game &game, const SDL_Event &event);
 	void update(Game &game);
 	void nextPlayerToMove();
 	void updatePlayerMoveText();
 	void placeToken(int col);
+	bool checkValidMouseLocation();
+	bool parseMouseLocation();
 private:
 	bool player2_to_move_;
 	Text player_to_move_text_;
+	int mouse_x_;
+	int mouse_y_;
+	bool mouse_down_;
 	SDL_Texture *red_tex_;
 	SDL_Texture *blue_tex_;
 	std::vector<std::vector<Entity>> board_;

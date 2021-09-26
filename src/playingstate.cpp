@@ -32,6 +32,7 @@ PlayingState::PlayingState()
 		}
 	}
 
+	mouse_down_ = false;
 	updatePlayerMoveText();
 }
 
@@ -73,7 +74,16 @@ void PlayingState::placeToken(int col) {
 	nextPlayerToMove();
 }
 
-void PlayingState::handleInput(Game& game, SDL_Event& event) {
+bool PlayingState::checkValidMouseLocation() {
+	if (mouse_x_ > BOARD_X_OFFSET + CELL_SIZE && mouse_x_ < (CELL_SIZE * (NUM_COLS + 2)) + LINE_THICKNESS) {
+		printf("Valid\n");
+		return true;
+	}
+		printf("Invalid\n");
+	return false;
+}
+
+void PlayingState::handleInput(Game& game, const SDL_Event& event) {
 		switch (event.type) {
 			case SDL_QUIT:
 				game.quit_ = true;
@@ -105,6 +115,21 @@ void PlayingState::handleInput(Game& game, SDL_Event& event) {
 						placeToken(6);
 						break;
 				}
+				case SDL_MOUSEMOTION:
+				case SDL_MOUSEBUTTONDOWN:
+				case SDL_MOUSEBUTTONUP:
+					if (event.type == SDL_MOUSEBUTTONDOWN) {
+						SDL_GetMouseState(&mouse_x_, &mouse_y_);
+						mouse_down_ = true;
+					} else if (event.type == SDL_MOUSEBUTTONUP && mouse_down_) {
+						mouse_down_ = false;
+						if (checkValidMouseLocation()) {
+
+						}
+					} else {
+						mouse_down_ = false;
+					}
+					break;
 		}
 }
 
