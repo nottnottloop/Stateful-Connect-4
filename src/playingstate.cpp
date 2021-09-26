@@ -94,6 +94,14 @@ void PlayingState::placeToken(int col) {
 	nextPlayerToMove();
 }
 
+void PlayingState::emptyBoard() {
+	for (int i = 0; i < NUM_ROWS; i++){
+		for (int j = 0; j < NUM_COLS; j++){
+			board_[i][j].setInvisible();
+		}
+	}
+}
+
 bool PlayingState::checkValidMouseLocation() {
 	if (mouse_x_ > BOARD_X_OFFSET + CELL_SIZE && mouse_x_ < BOARD_X_OFFSET + (CELL_SIZE * (NUM_COLS + 1)) + LINE_THICKNESS) {
 		//printf("Valid\n");
@@ -145,6 +153,11 @@ void PlayingState::handleInput(Game& game, const SDL_Event& event) {
 					case SDLK_7:
 						placeToken(6);
 						break;
+					#ifdef DEBUG_CONTROLS
+					case SDLK_MINUS:
+						emptyBoard();
+						break;
+					#endif
 				}
 				case SDL_MOUSEMOTION:
 				case SDL_MOUSEBUTTONDOWN:

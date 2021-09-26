@@ -15,6 +15,7 @@ public:
 	void updatePlayerMoveText();
 	SDL_Texture *getArrowTex();
 	void placeToken(int col);
+	void emptyBoard();
 	bool checkValidMouseLocation();
 	int parseMouseLocation();
 private:

@@ -1,6 +1,8 @@
 #pragma once
 #include <SDL.h>
 
+#define DEBUG_CONTROLS 1
+
 constexpr int SCREEN_WIDTH = 1024;
 constexpr int SCREEN_HEIGHT = 768;
 
