@@ -32,4 +32,7 @@ private:
 	SDL_Texture *blue_arrow_;
 	std::vector<std::vector<Entity>> board_;
 	std::vector<Entity> display_arrows_;
+#ifdef DEBUG_CONTROLS
+	bool player_color_lock_;
+#endif
 };

@@ -43,14 +43,23 @@ PlayingState::PlayingState()
 		}
 	}
 
+#ifdef DEBUG_CONTROLS
+	player_color_lock_ = false;
+#endif
 	current_mouse_location_ = 0;
 	mouse_down_ = false;
 	updatePlayerMoveText();
 }
 
 void PlayingState::nextPlayerToMove() {
+#ifdef DEBUG_CONTROLS
+	if (!player_color_lock_) {
+#endif
 	player2_to_move_ = !player2_to_move_;
 	updatePlayerMoveText();
+#ifdef DEBUG_CONTROLS
+	}
+#endif
 }
 
 void PlayingState::updatePlayerMoveText() {
@@ -129,9 +138,6 @@ void PlayingState::handleInput(Game& game, const SDL_Event& event) {
 				break;
 			case SDL_KEYDOWN:
 				switch (event.key.keysym.sym) {
-					case SDLK_SPACE:
-						nextPlayerToMove();
-						break;
 					case SDLK_1:
 						placeToken(0);
 						break;
@@ -153,11 +159,17 @@ void PlayingState::handleInput(Game& game, const SDL_Event& event) {
 					case SDLK_7:
 						placeToken(6);
 						break;
-					#ifdef DEBUG_CONTROLS
+#ifdef DEBUG_CONTROLS
+					case SDLK_SPACE:
+						nextPlayerToMove();
+						break;
 					case SDLK_MINUS:
 						emptyBoard();
 						break;
-					#endif
+					case SDLK_a:
+						player_color_lock_ = !player_color_lock_;
+						break;
+#endif
 				}
 				case SDL_MOUSEMOTION:
 				case SDL_MOUSEBUTTONDOWN:
