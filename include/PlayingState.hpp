@@ -11,14 +11,19 @@ public:
 	PlayingState();
 	void handleInput(Game &game, const SDL_Event &event);
 	void update(Game &game);
-	void nextPlayerToMove();
+	void nextPlayerToMove(bool force = false);
 	void updatePlayerMoveText();
 	SDL_Texture *getArrowTex();
 	void placeToken(int col);
-	void emptyBoard();
+	void checkWinOrDraw();
+	void win();
+	void draw();
+	void resetGame();
 	bool checkValidMouseLocation();
 	int parseMouseLocation();
 private:
+	bool won_;
+	bool drawn_;
 	bool player2_to_move_;
 	Text player_to_move_text_;
 	std::vector<Text> numbers_text_;

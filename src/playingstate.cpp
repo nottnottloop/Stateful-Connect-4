@@ -9,7 +9,7 @@
 extern RenderWindow window;
 
 PlayingState::PlayingState()
-:player_to_move_text_({768, 715}, {0, 0}, 50), player2_to_move_(false) {
+:player_to_move_text_({768, 715}, {0, 0}, 50), player2_to_move_(false), won_(false), drawn_(false) {
 	state_name_ = "PlayingState";
 	player_to_move_text_.openFont("res/fixedsys.ttf", 50);
 	blue_tex_ = window.loadTexture("res/blue.png");
@@ -51,9 +51,9 @@ PlayingState::PlayingState()
 	updatePlayerMoveText();
 }
 
-void PlayingState::nextPlayerToMove() {
+void PlayingState::nextPlayerToMove(bool force) {
 #ifdef DEBUG_CONTROLS
-	if (!player_color_lock_) {
+	if (!player_color_lock_ || force) {
 #endif
 	player2_to_move_ = !player2_to_move_;
 	updatePlayerMoveText();
@@ -103,12 +103,72 @@ void PlayingState::placeToken(int col) {
 	nextPlayerToMove();
 }
 
-void PlayingState::emptyBoard() {
+void PlayingState::checkWinOrDraw() {
+	bool empty_space_found = false;
+	for (int i = 0; i < NUM_ROWS; i++) {
+		for (int j = 0; j < NUM_COLS; j++) {
+			if (!board_[i][j].getVisible()) {
+				empty_space_found = true;
+			}
+			//horizontal
+			if (!won_ && j + 3 < NUM_COLS) {
+				if (board_[i][j].getVisible() && board_[i][j+1].getVisible() && board_[i][j+2].getVisible() && board_[i][j+3].getVisible()) {
+					if (board_[i][j].getFgTex() == board_[i][j+1].getFgTex() && board_[i][j+1].getFgTex() == board_[i][j+2].getFgTex() && board_[i][j+2].getFgTex() == board_[i][j+3].getFgTex()) {
+						won_ = true;
+					}
+				}
+			}
+			//vertical
+			if (!won_ && i + 3 < NUM_ROWS) {
+				if (board_[i][j].getVisible() && board_[i+1][j].getVisible() && board_[i+2][j].getVisible() && board_[i+3][j].getVisible()) {
+					if (board_[i][j].getFgTex() == board_[i+1][j].getFgTex() && board_[i+1][j].getFgTex() == board_[i+2][j].getFgTex() && board_[i+2][j].getFgTex() == board_[i+3][j].getFgTex()) {
+						won_ = true;
+					}
+				}
+			}
+			//backslash slash diagonal
+			if (!won_ && i + 3 < NUM_ROWS && j + 3 < NUM_COLS) {
+				if (board_[i][j].getVisible() && board_[i+1][j+1].getVisible() && board_[i+2][j+2].getVisible() && board_[i+3][j+3].getVisible()) {
+					if (board_[i][j].getFgTex() == board_[i+1][j+1].getFgTex() && board_[i+1][j+1].getFgTex() == board_[i+2][j+2].getFgTex() && board_[i+2][j+2].getFgTex() == board_[i+3][j+3].getFgTex()) {
+						won_ = true;
+					}
+				}
+			}
+
+			//forward slash diagonal
+			if (!won_ && i - 3 >= 0 && j + 3 < NUM_COLS) {
+				if (board_[i][j].getVisible() && board_[i-1][j+1].getVisible() && board_[i-2][j+2].getVisible() && board_[i-3][j+3].getVisible()) {
+					if (board_[i][j].getFgTex() == board_[i-1][j+1].getFgTex() && board_[i-1][j+1].getFgTex() == board_[i-2][j+2].getFgTex() && board_[i-2][j+2].getFgTex() == board_[i-3][j+3].getFgTex()) {
+						won_ = true;
+					}
+				}
+			}
+		}
+	}
+	if (won_) {
+		win();
+	}
+	if (!empty_space_found) {
+		draw();
+	}
+}
+
+void PlayingState::win() {
+	printf("WIN\n");
+}
+
+void PlayingState::draw() {
+	printf("DRAW\n");
+}
+
+void PlayingState::resetGame() {
 	for (int i = 0; i < NUM_ROWS; i++){
 		for (int j = 0; j < NUM_COLS; j++){
 			board_[i][j].setInvisible();
 		}
 	}
+	won_ = false;
+	drawn_ = false;
 }
 
 bool PlayingState::checkValidMouseLocation() {
@@ -161,10 +221,10 @@ void PlayingState::handleInput(Game& game, const SDL_Event& event) {
 						break;
 #ifdef DEBUG_CONTROLS
 					case SDLK_SPACE:
-						nextPlayerToMove();
+						nextPlayerToMove(true);
 						break;
 					case SDLK_MINUS:
-						emptyBoard();
+						resetGame();
 						break;
 					case SDLK_a:
 						player_color_lock_ = !player_color_lock_;
@@ -187,6 +247,7 @@ void PlayingState::handleInput(Game& game, const SDL_Event& event) {
 						if (checkValidMouseLocation()) {
 							//parseMouseLocation();
 							placeToken(parseMouseLocation());
+							checkWinOrDraw();
 						}
 					}
 					break;
