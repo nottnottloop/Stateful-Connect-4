@@ -1,3 +1,4 @@
+#pragma once
 #include <SDL.h>
 
 constexpr int SCREEN_WIDTH = 1024;

@@ -12,6 +12,24 @@ PlayingState::PlayingState()
 :player_to_move_text_({768, 700}, {0, 0}, 50), player2_to_move_(false) {
 	state_name_ = "PlayingState";
 	player_to_move_text_.openFont("res/fixedsys.ttf", 50);
+
+	blue_tex_ = window.loadTexture("res/blue.png");
+	red_tex_ = window.loadTexture("res/red.png");
+	board_.resize(NUM_ROWS);
+	for (int i = 0; i < NUM_ROWS; i++) {
+		board_[i].reserve(NUM_COLS);
+	}
+
+	for (int i = 0; i < NUM_ROWS; i++) {
+		for (int j = 0; j < NUM_COLS; j++) {
+			board_[i].emplace_back(Entity({(CELL_SIZE * (j+1.0f)) + BOARD_X_OFFSET + CELL_SIZE / 8, (CELL_SIZE * (i+1.0f)) + BOARD_Y_OFFSET + CELL_SIZE / 8}, {0, 0}, {0, 0, 100, 100}, {0, 0, 100, 100}, nullptr, red_tex_));
+			board_[i][j].setScale(0.8);
+			if ((i % 2) == 0) {
+				board_[i][j].setFgTex(blue_tex_);
+			}
+		}
+	}
+
 	updatePlayerMoveText();
 }
 
@@ -65,6 +83,12 @@ void PlayingState::update(Game& game) {
 			width += LINE_THICKNESS;
 		}
 		window.renderRect({CELL_SIZE + BOARD_X_OFFSET, (CELL_SIZE * i) + BOARD_Y_OFFSET, width, LINE_THICKNESS}, BLACK);
+	}
+	//tokens
+	for (int i = 0; i < NUM_ROWS; i++) {
+		for (int j = 0; j < NUM_COLS; j++) {
+			window.render(board_[i][j].renderFgRectInfo(), board_[i][j].getFgTex());
+		}
 	}
 	window.display();
 	window.showWindow();
