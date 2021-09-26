@@ -16,7 +16,7 @@ set (SOURCES
 
 add_executable (Connect4 ${SOURCES})
 #add_executable (Connect4 WIN32 ${SOURCES})
-set_target_properties(Connect4 PROPERTIES OUTPUT_NAME "Connect 4")
+set_target_properties(Connect4 PROPERTIES OUTPUT_NAME "Stateful Connect 4")
 
 target_include_directories (Connect4 PUBLIC
 	C:/dev/Libraries/SDL2-2.0.16vc/include/SDL2

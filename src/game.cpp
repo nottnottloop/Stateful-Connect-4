@@ -8,7 +8,7 @@ Game::Game() {
 	quit_ = false;
 	introstate_ = new IntroState;
 	playingstate_ = new PlayingState;
-	setState(playingstate_);
+	playingState();
 }
 
 void Game::handleInput(SDL_Event &event) {
