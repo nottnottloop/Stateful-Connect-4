@@ -21,6 +21,9 @@ public:
 	void resetGame();
 	bool checkValidMouseLocation();
 	int parseMouseLocation();
+#ifdef DEBUG_CONTROLS
+	void nearlyFillBoard();
+#endif
 private:
 	bool won_;
 	bool drawn_;

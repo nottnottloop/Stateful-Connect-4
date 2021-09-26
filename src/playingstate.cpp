@@ -5,6 +5,9 @@
 #include "RenderWindow.hpp"
 #include "Game.hpp"
 #include "Constants.hpp"
+#ifdef DEBUG_CONTROLS
+#include <random>
+#endif
 
 extern RenderWindow window;
 
@@ -79,6 +82,9 @@ SDL_Texture *PlayingState::getArrowTex() {
 }
 
 void PlayingState::placeToken(int col) {
+	if (won_ || drawn_) {
+		return;
+	}
 	bool row_set = false;
 	int row;
 	for (int i = 0; i < NUM_ROWS; i++) {
@@ -191,6 +197,32 @@ int PlayingState::parseMouseLocation() {
 	return position;
 }
 
+#ifdef DEBUG_CONTROLS
+void PlayingState::nearlyFillBoard() {
+	srand(time(0));
+	for (int i = 0; i < NUM_ROWS; i++) {
+		for (int j = 0; j < NUM_COLS - 1; j++) {
+			int num = rand() % 4;
+			switch (num) {
+				case 0:
+					board_[i][j].setFgTex(red_tex_);
+					break;
+				case 1:
+					board_[i][j].setFgTex(blue_tex_);
+					break;
+				case 2:
+					board_[i][j].setFgTex(red_arrow_);
+					break;
+				case 3:
+					board_[i][j].setFgTex(blue_arrow_);
+					break;
+			}
+			board_[i][j].setVisible();
+		}
+	}
+}
+#endif
+
 void PlayingState::handleInput(Game& game, const SDL_Event& event) {
 		switch (event.type) {
 			case SDL_QUIT:
@@ -228,6 +260,9 @@ void PlayingState::handleInput(Game& game, const SDL_Event& event) {
 						break;
 					case SDLK_a:
 						player_color_lock_ = !player_color_lock_;
+						break;
+					case SDLK_l:
+						nearlyFillBoard();
 						break;
 #endif
 				}
