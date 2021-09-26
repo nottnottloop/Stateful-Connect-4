@@ -24,9 +24,11 @@ PlayingState::PlayingState()
 		for (int j = 0; j < NUM_COLS; j++) {
 			board_[i].emplace_back(Entity({(CELL_SIZE * (j+1.0f)) + BOARD_X_OFFSET + CELL_SIZE / 8, (CELL_SIZE * (i+1.0f)) + BOARD_Y_OFFSET + CELL_SIZE / 8}, {0, 0}, {0, 0, 100, 100}, {0, 0, 100, 100}, nullptr, red_tex_));
 			board_[i][j].setScale(0.8);
-			if ((i % 2) == 0) {
-				board_[i][j].setFgTex(blue_tex_);
-			}
+			board_[i][j].setInvisible();
+			//test what the sprites look like
+			//if ((i % 2) == 0) {
+			//	board_[i][j].setFgTex(blue_tex_);
+			//}
 		}
 	}
 
@@ -46,6 +48,31 @@ void PlayingState::updatePlayerMoveText() {
 	}
 }
 
+void PlayingState::placeToken(int col) {
+	bool row_set = false;
+	int row;
+	for (int i = 0; i < NUM_ROWS; i++) {
+		if (board_[i][col].getVisible()) {
+			row = i - 1;
+			if (row < 0) {
+				return;
+			}
+			row_set = true;
+			break;
+		}
+	}
+	if (!row_set) {
+		row	= NUM_ROWS - 1;
+	}
+	if (player2_to_move_) {
+		board_[row][col].setFgTex(blue_tex_);
+	} else {
+		board_[row][col].setFgTex(red_tex_);
+	}
+	board_[row][col].setVisible();
+	nextPlayerToMove();
+}
+
 void PlayingState::handleInput(Game& game, SDL_Event& event) {
 		switch (event.type) {
 			case SDL_QUIT:
@@ -55,6 +82,27 @@ void PlayingState::handleInput(Game& game, SDL_Event& event) {
 				switch (event.key.keysym.sym) {
 					case SDLK_SPACE:
 						nextPlayerToMove();
+						break;
+					case SDLK_1:
+						placeToken(0);
+						break;
+					case SDLK_2:
+						placeToken(1);
+						break;
+					case SDLK_3:
+						placeToken(2);
+						break;
+					case SDLK_4:
+						placeToken(3);
+						break;
+					case SDLK_5:
+						placeToken(4);
+						break;
+					case SDLK_6:
+						placeToken(5);
+						break;
+					case SDLK_7:
+						placeToken(6);
 						break;
 				}
 		}

@@ -13,6 +13,7 @@ public:
 	void update(Game &game);
 	void nextPlayerToMove();
 	void updatePlayerMoveText();
+	void placeToken(int col);
 private:
 	bool player2_to_move_;
 	Text player_to_move_text_;
