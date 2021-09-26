@@ -292,21 +292,24 @@ void PlayingState::handleInput(Game& game, const SDL_Event& event) {
 #endif
 				}
 				case SDL_MOUSEMOTION:
-				case SDL_MOUSEBUTTONDOWN:
-				case SDL_MOUSEBUTTONUP:
 					SDL_GetMouseState(&mouse_x_, &mouse_y_);
 					if (checkValidMouseLocation()) {
 						current_mouse_location_ = parseMouseLocation();
 					} else {
 						current_mouse_location_ = -1;
 					}
-					if (event.type == SDL_MOUSEBUTTONDOWN) {
-						if (buttons_[0].clicked(mouse_x_, mouse_y_)) {
-							resetGame();
-							break;
-						}
+					break;
+				case SDL_MOUSEBUTTONDOWN:
+					if (!won_ && !drawn_) {
 						mouse_down_ = true;
-					} else if (event.type == SDL_MOUSEBUTTONUP && mouse_down_) {
+					}
+					break;
+				case SDL_MOUSEBUTTONUP:
+					if (buttons_[0].clicked(mouse_x_, mouse_y_) && !mouse_down_) {
+						resetGame();
+						break;
+					}
+					if (mouse_down_ && !won_ && !drawn_) {
 						mouse_down_ = false;
 						if (checkValidMouseLocation() && !won_ && !drawn_) {
 							//parseMouseLocation();
