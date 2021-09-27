@@ -12,6 +12,7 @@ public:
 	PlayingState();
 	void handleInput(Game &game, const SDL_Event &event);
 	void update(Game &game);
+	void nextBgColor();
 	void randomPlayerToMove();
 	void nextPlayerToMove(bool force = false);
 	void updatePlayerMoveText();
@@ -27,6 +28,8 @@ public:
 	void nearlyFillBoard();
 #endif
 private:
+	int color_index_location_;
+	std::vector<SDL_Color> colors_;
 	bool won_;
 	bool drawn_;
 	bool player2_to_move_;

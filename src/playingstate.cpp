@@ -57,12 +57,23 @@ restart_button_(BasicButton({SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2, 200, 100
 #ifdef DEBUG_CONTROLS
 	player_color_lock_ = false;
 #endif
+
 	current_mouse_location_ = 0;
 	bound_to_board_ = false;
 	bound_to_restart_screen_ = false;
 
+	colors_ = {BUBBLE, SKY_BLUE, GAINSBORO, CLASSIC_BACKGROUND, NEW_BACKGROUND, RED, GREEN, BLUE, CYAN, PEACH, PURPLE, ORANGE_RED, WHITE, BLACK, PASTEL_BLUE, LIME_GREEN};
+	color_index_location_ = 0;
+
 	randomPlayerToMove();
 	updatePlayerMoveText();
+}
+
+void PlayingState::nextBgColor() {
+	color_index_location_++;
+	if (color_index_location_ > colors_.size() - 1) {
+		color_index_location_ = 0;
+	}
 }
 
 void PlayingState::randomPlayerToMove() {
@@ -292,6 +303,9 @@ void PlayingState::handleInput(Game& game, const SDL_Event& event) {
 					case SDLK_7:
 						placeToken(6);
 						break;
+					case SDLK_c:
+						nextBgColor();
+						break;
 #ifdef DEBUG_CONTROLS
 					case SDLK_SPACE:
 						nextPlayerToMove(true);
@@ -343,7 +357,7 @@ void PlayingState::handleInput(Game& game, const SDL_Event& event) {
 }
 
 void PlayingState::update(Game& game) {
-	window.clear(BUBBLE, 0xFF);
+	window.clear(colors_[color_index_location_], 0xFF);
 
 	//text to show which player's move it is
 	window.render(player_to_move_text_);
