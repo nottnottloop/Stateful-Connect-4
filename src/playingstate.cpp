@@ -11,8 +11,12 @@
 extern RenderWindow window;
 
 PlayingState::PlayingState()
-:player_to_move_text_({768, 715}, {0, 0}), won_(false), drawn_(false), win_text_({SCREEN_WIDTH / 2, 250}, {0, 0}), draw_text_({SCREEN_WIDTH / 2, 250}, {0, 0}) {
-	state_name_ = "PlayingState";
+:GameState("PlayingState"),
+player_to_move_text_({768, 715}, {0, 0}),
+won_(false), drawn_(false),
+win_text_({SCREEN_WIDTH / 2, 250}, {0, 0}),
+draw_text_({SCREEN_WIDTH / 2, 250}, {0, 0}),
+restart_button_(BasicButton({SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2, 200, 100}, {0, 0}, WHITE, GREEN, 5, "Play Again")) {
 
 	player_to_move_text_.openFont("res/fixedsys.ttf", 50);
 	win_text_.openFont("res/fixedsys.ttf", 50);
@@ -48,7 +52,7 @@ PlayingState::PlayingState()
 		}
 	}
 
-	buttons_.push_back(BasicButton({SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2, 200, 100}, {0, 0}, WHITE, GREEN, 5, "Play Again"));
+;
 
 #ifdef DEBUG_CONTROLS
 	player_color_lock_ = false;
@@ -319,7 +323,7 @@ void PlayingState::handleInput(Game& game, const SDL_Event& event) {
 					}
 					break;
 				case SDL_MOUSEBUTTONUP:
-					if (buttons_[0].clicked(mouse_x_, mouse_y_) && bound_to_restart_screen_) {
+					if (restart_button_.clicked(mouse_x_, mouse_y_) && bound_to_restart_screen_) {
 						resetGame();
 					}
 					if (bound_to_board_) {
@@ -374,7 +378,7 @@ void PlayingState::update(Game& game) {
 	}
 	if (won_ || drawn_) {
 		window.renderBlendedRect({0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}, {0, 0, 0, 220});
-		window.render(buttons_[0]);
+		window.render(restart_button_);
 	}
 	if (won_) {
 		window.render(win_text_, true);

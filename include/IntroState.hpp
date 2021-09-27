@@ -3,6 +3,7 @@
 #include <SDL_ttf.h>
 #include "GameState.hpp"
 #include "Text.hpp"
+#include "BasicButton.hpp"
 
 class IntroState : public GameState {
 public:
@@ -11,4 +12,5 @@ public:
 	void update(Game &game);
 private:
 	Text text_;
+	//BasicButton start_game_button;
 };

@@ -4,6 +4,7 @@
 #include "Text.hpp"
 #include "RenderWindow.hpp"
 #include "Game.hpp"
+#include "BasicButton.hpp"
 
 extern RenderWindow window;
 
