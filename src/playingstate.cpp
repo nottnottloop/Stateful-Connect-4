@@ -299,6 +299,9 @@ void PlayingState::handleInput(Game& game, const SDL_Event& event) {
 					case SDLK_MINUS:
 						resetGame();
 						break;
+					case SDLK_9:
+						game.introState();
+						break;
 					case SDLK_a:
 						player_color_lock_ = !player_color_lock_;
 						break;
