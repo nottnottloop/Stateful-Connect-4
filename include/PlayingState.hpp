@@ -12,6 +12,7 @@ public:
 	PlayingState();
 	void handleInput(Game &game, const SDL_Event &event);
 	void update(Game &game);
+	void randomPlayerToMove();
 	void nextPlayerToMove(bool force = false);
 	void updatePlayerMoveText();
 	SDL_Texture *getArrowTex();

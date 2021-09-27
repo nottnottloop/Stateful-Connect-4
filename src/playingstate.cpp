@@ -6,14 +6,12 @@
 #include "Game.hpp"
 #include "Constants.hpp"
 #include "BasicButton.hpp"
-#ifdef DEBUG_CONTROLS
 #include <random>
-#endif
 
 extern RenderWindow window;
 
 PlayingState::PlayingState()
-:player_to_move_text_({768, 715}, {0, 0}), player2_to_move_(false), won_(false), drawn_(false), win_text_({SCREEN_WIDTH / 2, 250}, {0, 0}), draw_text_({SCREEN_WIDTH / 2, 250}, {0, 0}) {
+:player_to_move_text_({768, 715}, {0, 0}), won_(false), drawn_(false), win_text_({SCREEN_WIDTH / 2, 250}, {0, 0}), draw_text_({SCREEN_WIDTH / 2, 250}, {0, 0}) {
 	state_name_ = "PlayingState";
 
 	player_to_move_text_.openFont("res/fixedsys.ttf", 50);
@@ -58,7 +56,20 @@ PlayingState::PlayingState()
 	current_mouse_location_ = 0;
 	bound_to_board_ = false;
 	bound_to_restart_screen_ = false;
+
+	randomPlayerToMove();
 	updatePlayerMoveText();
+}
+
+void PlayingState::randomPlayerToMove() {
+	std::random_device seeder;
+	std::mt19937_64 rd;
+	rd.seed(seeder());
+	if ((rd() % 2)) {
+		player2_to_move_ = true;
+	} else {
+		player2_to_move_ = false;
+	}
 }
 
 void PlayingState::nextPlayerToMove(bool force) {
