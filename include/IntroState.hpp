@@ -13,4 +13,7 @@ public:
 private:
 	Text text_;
 	BasicButton start_game_button_;
+	bool mouse_down_;
+	int mouse_x_;
+	int mouse_y_;
 };
