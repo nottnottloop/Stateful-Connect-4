@@ -67,14 +67,25 @@ void RenderWindow::render(std::tuple<SDL_Rect, SDL_Rect> rects, SDL_Texture* tex
 	SDL_RenderCopy(renderer_, tex, &std::get<0>(rects), &std::get<1>(rects));
 }
 
-void RenderWindow::render(BasicButton &button) {
+void RenderWindow::render(const BasicButton &button) {
 	if (button.visible_ == false) {
 		return;
 	}
 	changeColor(button.background_color_);
 	SDL_RenderFillRect(renderer_, &button.rect_);
 	changeColor(button.border_color_);
-	SDL_RenderDrawRect(renderer_, &button.rect_);
+	if (button.border_thickness_ == 1) {
+		SDL_RenderDrawRect(renderer_, &button.rect_);
+	} else {
+		SDL_Rect top_rect = {button.rect_.x, button.rect_.y, button.rect_.w, button.border_thickness_};
+		SDL_Rect bot_rect = {button.rect_.x, button.rect_.y + button.rect_.h - button.border_thickness_, button.rect_.w, button.border_thickness_};
+		SDL_Rect left_rect = {button.rect_.x, button.rect_.y, button.border_thickness_, button.rect_.h};
+		SDL_Rect right_rect = {button.rect_.x + button.rect_.w - button.border_thickness_, button.rect_.y, button.border_thickness_, button.rect_.h};
+		SDL_RenderFillRect(renderer_, &top_rect);
+		SDL_RenderFillRect(renderer_, &bot_rect);
+		SDL_RenderFillRect(renderer_, &left_rect);
+		SDL_RenderFillRect(renderer_, &right_rect);
+	}
 	render(button.text_);
 }
 

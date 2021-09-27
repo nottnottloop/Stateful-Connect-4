@@ -12,5 +12,5 @@ public:
 	void update(Game &game);
 private:
 	Text text_;
-	//BasicButton start_game_button;
+	BasicButton start_game_button_;
 };
