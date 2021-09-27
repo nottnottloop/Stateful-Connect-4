@@ -12,6 +12,7 @@ public:
 	void update(Game &game);
 private:
 	Text text_;
+	Text flavor_text_;
 	BasicButton start_game_button_;
 	bool mouse_down_;
 	int mouse_x_;
