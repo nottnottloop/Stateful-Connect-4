@@ -14,5 +14,6 @@ private:
 	SDL_Color background_color_;
 	SDL_Color border_color_;
 	int border_thickness_;
+	bool visible_;
 	friend class RenderWindow;
 };

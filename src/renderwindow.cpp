@@ -68,6 +68,9 @@ void RenderWindow::render(std::tuple<SDL_Rect, SDL_Rect> rects, SDL_Texture* tex
 }
 
 void RenderWindow::render(BasicButton &button) {
+	if (button.visible_ == false) {
+		return;
+	}
 	changeColor(button.background_color_);
 	SDL_RenderFillRect(renderer_, &button.rect_);
 	changeColor(button.border_color_);

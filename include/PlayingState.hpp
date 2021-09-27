@@ -36,7 +36,8 @@ private:
 	int mouse_x_;
 	int mouse_y_;
 	int current_mouse_location_;
-	bool mouse_down_;
+	bool bound_to_board_;
+	bool bound_to_restart_screen_;
 	SDL_Texture *red_tex_;
 	SDL_Texture *blue_tex_;
 	SDL_Texture *red_arrow_;

@@ -56,7 +56,8 @@ PlayingState::PlayingState()
 	player_color_lock_ = false;
 #endif
 	current_mouse_location_ = 0;
-	mouse_down_ = false;
+	bound_to_board_ = false;
+	bound_to_restart_screen_ = false;
 	updatePlayerMoveText();
 }
 
@@ -301,22 +302,24 @@ void PlayingState::handleInput(Game& game, const SDL_Event& event) {
 					break;
 				case SDL_MOUSEBUTTONDOWN:
 					if (!won_ && !drawn_) {
-						mouse_down_ = true;
+						bound_to_board_ = true;
+					} else {
+						bound_to_restart_screen_ = true;
 					}
 					break;
 				case SDL_MOUSEBUTTONUP:
-					if (buttons_[0].clicked(mouse_x_, mouse_y_) && !mouse_down_) {
+					if (buttons_[0].clicked(mouse_x_, mouse_y_) && bound_to_restart_screen_) {
 						resetGame();
-						break;
 					}
-					if (mouse_down_ && !won_ && !drawn_) {
-						mouse_down_ = false;
+					if (bound_to_board_) {
 						if (checkValidMouseLocation() && !won_ && !drawn_) {
 							//parseMouseLocation();
 							placeToken(parseMouseLocation());
 							checkWinOrDraw();
 						}
 					}
+					bound_to_board_ = false;
+					bound_to_restart_screen_ = false;
 					break;
 		}
 }
