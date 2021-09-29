@@ -16,10 +16,10 @@ mouse_down_(false),
 text_({SCREEN_WIDTH / 2, 0}, {0, 0}),
 flavor_text_({SCREEN_WIDTH / 2 + 50, 200}, {0, 0}),
 local_play_text_({SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 50}, {0, 0}),
-one_player_button_(BasicButton({SCREEN_WIDTH / 2 - 225, SCREEN_HEIGHT / 2, 200, 100}, {0, 0}, BLACK, SKY_BLUE, BLACK, 5, "One Player")),
-two_player_button_(BasicButton({SCREEN_WIDTH / 2 + 25, SCREEN_HEIGHT / 2, 200, 100}, {0, 0}, BLACK, LIME_GREEN, BLACK, 5, "Two Player")),
+one_player_button_(BasicButton({SCREEN_WIDTH / 2 - 225, SCREEN_HEIGHT / 2, 200, 100}, {0, 0}, BLACK, LIME_GREEN, BLACK, 5, "One Player")),
+two_player_button_(BasicButton({SCREEN_WIDTH / 2 + 25, SCREEN_HEIGHT / 2, 200, 100}, {0, 0}, BLACK, PEACH, BLACK, 5, "Two Player")),
 internet_play_text_({SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 150}, {0, 0}),
-internet_play_button_(BasicButton({SCREEN_WIDTH / 2 - 200, SCREEN_HEIGHT / 2 + 200, 400, 100}, {0, 0}, BLACK, BLUE, BLACK, 5, "Internet Play"))
+internet_play_button_(BasicButton({SCREEN_WIDTH / 2 - 200, SCREEN_HEIGHT / 2 + 200, 400, 100}, {0, 0}, BLACK, MODS_BLUE, BLACK, 5, "Internet Play"))
 {
 	text_.openFont("res/curly.ttf", 125);
 	flavor_text_.openFont("res/curly.ttf", 40);
@@ -43,8 +43,10 @@ void IntroState::handleInput(Game &game, const SDL_Event &event) {
 				mouse_down_ = true;
 				break;
 			case SDL_MOUSEBUTTONUP:
-				if (two_player_button_.clicked(mouse_x_, mouse_y_) && mouse_down_) {
-					game.playingState();
+				if (mouse_down_) {
+					if (two_player_button_.clicked(mouse_x_, mouse_y_)) {
+						game.playingState();
+					}
 				}
 				mouse_down_ = false;
 				break;

@@ -6,6 +6,7 @@
 constexpr int SCREEN_WIDTH = 1024;
 constexpr int SCREEN_HEIGHT = 768;
 
+constexpr SDL_Color MODS_BLUE = {0x00, 0xCE, 0xFF};
 constexpr SDL_Color GAINSBORO = {220, 220, 220};
 constexpr SDL_Color SKY_BLUE = {135, 206, 235};
 constexpr SDL_Color BUBBLE = {0xD7, 0xEA, 0xF9};
