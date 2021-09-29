@@ -13,7 +13,11 @@ public:
 private:
 	Text text_;
 	Text flavor_text_;
-	BasicButton start_game_button_;
+	Text local_play_text_;
+	BasicButton one_player_button_;
+	BasicButton two_player_button_;
+	Text internet_play_text_;
+	BasicButton internet_play_button_;
 	bool mouse_down_;
 	int mouse_x_;
 	int mouse_y_;

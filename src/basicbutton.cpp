@@ -4,10 +4,18 @@
 #include "BasicButton.hpp"
 #include "Constants.hpp"
 
-BasicButton::BasicButton(SDL_Rect button_rect, Vector2f offset, SDL_Color background_color, SDL_Color border_color, int border_thickness, char *message)
-:offset_(offset), rect_(button_rect), text_(Vector2f{button_rect.x + button_rect.w / 2.0f, button_rect.y + button_rect.h / 2.0f}, Vector2f{0, 0}), background_color_(background_color), border_color_(border_color), border_thickness_(border_thickness), visible_(true) {
+BasicButton::BasicButton(SDL_Rect button_rect, Vector2f offset, SDL_Color text_color, SDL_Color background_color, SDL_Color border_color, int border_thickness, char *message)
+:offset_(offset), 
+rect_(button_rect),
+text_(Vector2f{button_rect.x + button_rect.w / 2.0f, button_rect.y + button_rect.h / 2.0f}, Vector2f{0, 0}),
+text_color_(text_color),
+background_color_(background_color),
+border_color_(border_color),
+border_thickness_(border_thickness),
+visible_(true) 
+{
 	text_.openFont("res/fixedsys.ttf", 35);
-	text_.loadFontTexture(BLACK, message);
+	text_.loadFontTexture(text_color_, message);
 	int tex_w, tex_h;
 	SDL_QueryTexture(text_.getFgTex(), nullptr, nullptr, &tex_w, &tex_h);
 	text_.setPos({button_rect.x + button_rect.w / 2 - tex_w / 2.0f, button_rect.y + button_rect.h / 2 - tex_h / 2.0f});
