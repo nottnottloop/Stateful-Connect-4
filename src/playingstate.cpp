@@ -16,7 +16,8 @@ player_to_move_text_({768, 715}, {0, 0}),
 won_(false), drawn_(false),
 win_text_({SCREEN_WIDTH / 2, 250}, {0, 0}),
 draw_text_({SCREEN_WIDTH / 2, 250}, {0, 0}),
-restart_button_(BasicButton({SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2, 200, 100}, {0, 0}, WHITE, GREEN, 5, "Play Again")) {
+restart_button_(BasicButton({SCREEN_WIDTH / 2 + 50, SCREEN_HEIGHT / 2, 200, 100}, {0, 0}, WHITE, GREEN, 5, "Play Again")),
+back_to_intro_button_(BasicButton({SCREEN_WIDTH / 2 - 250, SCREEN_HEIGHT / 2, 200, 100}, {0, 0}, GAINSBORO, RED, 5, "Quit")) {
 
 	player_to_move_text_.openFont("res/fixedsys.ttf", 50);
 	win_text_.openFont("res/fixedsys.ttf", 50);
@@ -340,8 +341,13 @@ void PlayingState::handleInput(Game& game, const SDL_Event& event) {
 					}
 					break;
 				case SDL_MOUSEBUTTONUP:
-					if (restart_button_.clicked(mouse_x_, mouse_y_) && bound_to_restart_screen_) {
-						resetGame();
+					if (bound_to_restart_screen_) {
+						if (restart_button_.clicked(mouse_x_, mouse_y_)) {
+							resetGame();
+						} else if (back_to_intro_button_.clicked(mouse_x_, mouse_y_)) {
+							resetGame();
+							game.introState();
+						}
 					}
 					if (bound_to_board_) {
 						if (checkValidMouseLocation() && !won_ && !drawn_) {
@@ -396,6 +402,7 @@ void PlayingState::update(Game& game) {
 	if (won_ || drawn_) {
 		window.renderBlendedRect({0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}, {0, 0, 0, 220});
 		window.render(restart_button_);
+		window.render(back_to_intro_button_);
 	}
 	if (won_) {
 		window.render(win_text_, true);

@@ -49,6 +49,7 @@ private:
 	std::vector<std::vector<Entity>> board_;
 	std::vector<Entity> display_arrows_;
 	BasicButton restart_button_;
+	BasicButton back_to_intro_button_;
 #ifdef DEBUG_CONTROLS
 	bool player_color_lock_;
 #endif
