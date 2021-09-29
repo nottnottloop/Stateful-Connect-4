@@ -15,11 +15,12 @@ IntroState::IntroState()
 mouse_down_(false),
 text_({0, 0}, {0, 0}),
 flavor_text_({0, 200}, {0, 0}),
-start_game_button_(BasicButton({SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2, 200, 100}, {0, 0}, BUBBLE, BLACK, 5, "Start Game")) {
+start_game_button_(BasicButton({SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2, 200, 100}, {0, 0}, BUBBLE, BLACK, 5, "Start Game")) 
+{
 	text_.openFont("res/curly.ttf", 125);
 	flavor_text_.openFont("res/curly.ttf", 40);
 	text_.loadFontTexture({0, 0, 0}, "Stateful Connect Four", true);
-	flavor_text_.loadFontTexture({0, 0, 0}, "\"I guarantee that you cannot find a higher quality Connect Four game in existence.\"\n                                                                                                                 NottNott", true, true, SCREEN_WIDTH);
+	flavor_text_.loadFontTexture({0, 0, 0}, "\"I guarantee you cannot find a higher quality Connect Four game in existence\"\n                                                                                                                 NottNott", true, true, SCREEN_WIDTH);
 }
 
 void IntroState::handleInput(Game &game, const SDL_Event &event) {

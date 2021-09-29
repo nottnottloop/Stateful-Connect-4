@@ -17,8 +17,8 @@ won_(false), drawn_(false),
 win_text_({SCREEN_WIDTH / 2, 250}, {0, 0}),
 draw_text_({SCREEN_WIDTH / 2, 250}, {0, 0}),
 restart_button_(BasicButton({SCREEN_WIDTH / 2 + 50, SCREEN_HEIGHT / 2, 200, 100}, {0, 0}, WHITE, GREEN, 5, "Play Again")),
-back_to_intro_button_(BasicButton({SCREEN_WIDTH / 2 - 250, SCREEN_HEIGHT / 2, 200, 100}, {0, 0}, GAINSBORO, RED, 5, "Quit")) {
-
+back_to_intro_button_(BasicButton({SCREEN_WIDTH / 2 - 250, SCREEN_HEIGHT / 2, 200, 100}, {0, 0}, GAINSBORO, RED, 5, "Quit")) 
+{
 	player_to_move_text_.openFont("res/fixedsys.ttf", 50);
 	win_text_.openFont("res/fixedsys.ttf", 50);
 	draw_text_.openFont("res/fixedsys.ttf", 50);
