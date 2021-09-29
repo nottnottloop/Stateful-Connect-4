@@ -49,6 +49,11 @@ void RenderWindow::clear(SDL_Color color, int a) {
 	SDL_RenderClear(renderer_);
 }
 
+void RenderWindow::setIcon(const char* file_path) {
+	icon_ = IMG_Load(file_path);
+	SDL_SetWindowIcon(window_, icon_);
+}
+
 void RenderWindow::changeColor(SDL_Color color) {
 	SDL_SetRenderDrawColor(renderer_, color.r, color.g, color.b, color.a);        
 }

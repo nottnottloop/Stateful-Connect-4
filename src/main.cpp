@@ -35,6 +35,8 @@ int main(int argc, char* argv[]) {
 			printf("Mix_Init: %s\n", Mix_GetError());
 	}
 
+	window.setIcon("res/red.png");
+
 	SDL_Event event;
 
 	Game game;
