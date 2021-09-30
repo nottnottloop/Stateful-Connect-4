@@ -18,6 +18,7 @@ public:
 	void nextPlayerToMove(bool force = false);
 	void updatePlayerMoveText();
 	SDL_Texture *getArrowTex();
+	void tryToPlaceToken(int col);
 	void placeToken(int col);
 	void checkWinOrDraw();
 	void win(bool red_won);

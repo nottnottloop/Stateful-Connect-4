@@ -125,6 +125,18 @@ SDL_Texture *PlayingState::getArrowTex() {
 	}
 }
 
+//this function changes the behaviour of player 1's attempt to place a token
+//the 2 player, same computer code was written first so this allows that code to remain untouched
+void PlayingState::tryToPlaceToken(int col) {
+	if (game_mode_ == game_mode::TWO_PLAYER) {
+		placeToken(col);
+	} else {
+		if (!player2_to_move_) {
+			placeToken(col);
+		}
+	}
+}
+
 void PlayingState::placeToken(int col) {
 	if (won_ || drawn_) {
 		return;
@@ -298,25 +310,25 @@ void PlayingState::handleInput(Game& game, const SDL_Event& event) {
 			case SDL_KEYDOWN:
 				switch (event.key.keysym.sym) {
 					case SDLK_1:
-						placeToken(0);
+						tryToPlaceToken(0);
 						break;
 					case SDLK_2:
-						placeToken(1);
+						tryToPlaceToken(1);
 						break;
 					case SDLK_3:
-						placeToken(2);
+						tryToPlaceToken(2);
 						break;
 					case SDLK_4:
-						placeToken(3);
+						tryToPlaceToken(3);
 						break;
 					case SDLK_5:
-						placeToken(4);
+						tryToPlaceToken(4);
 						break;
 					case SDLK_6:
-						placeToken(5);
+						tryToPlaceToken(5);
 						break;
 					case SDLK_7:
-						placeToken(6);
+						tryToPlaceToken(6);
 						break;
 					case SDLK_c:
 						cycleColor(false);
@@ -369,7 +381,7 @@ void PlayingState::handleInput(Game& game, const SDL_Event& event) {
 					if (bound_to_board_) {
 						if (checkValidMouseLocation() && !won_ && !drawn_) {
 							//parseMouseLocation();
-							placeToken(parseMouseLocation());
+							tryToPlaceToken(parseMouseLocation());
 							checkWinOrDraw();
 						}
 					}
