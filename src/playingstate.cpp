@@ -276,6 +276,10 @@ void PlayingState::nearlyFillBoard() {
 }
 #endif
 
+void PlayingState::setGameMode(game_mode mode) {
+	game_mode_ = mode;
+}
+
 void PlayingState::handleInput(Game& game, const SDL_Event& event) {
 		switch (event.type) {
 			case SDL_QUIT:

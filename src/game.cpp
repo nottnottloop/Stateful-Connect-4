@@ -28,9 +28,9 @@ void Game::introState() {
 	state_ = introstate_;
 }
 
-//set the state to playing
+//set the state to playing with a given game mode
 void Game::playingState(game_mode mode) {
-	game_mode_ = mode;
+	playingstate_->setGameMode(mode);
 	state_ = playingstate_;
 }
 
