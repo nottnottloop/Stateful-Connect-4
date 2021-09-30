@@ -38,19 +38,19 @@ back_to_intro_button_(BasicButton({SCREEN_WIDTH / 2 - 250, SCREEN_HEIGHT / 2, 20
 		numbers_text_[i].loadFontTexture(BLACK, number);
 	}
 
-	board_.resize(NUM_ROWS);
+	board_entities_.resize(NUM_ROWS);
 	for (int i = 0; i < NUM_ROWS; i++) {
-		board_[i].reserve(NUM_COLS);
+		board_entities_[i].reserve(NUM_COLS);
 	}
 
 	for (int i = 0; i < NUM_ROWS; i++) {
 		for (int j = 0; j < NUM_COLS; j++) {
-			board_[i].emplace_back(Entity({(CELL_SIZE * (j+1.0f)) + BOARD_X_OFFSET + CELL_SIZE / 8, (CELL_SIZE * (i+1.0f)) + BOARD_Y_OFFSET + CELL_SIZE / 8}, {0, 0}, {0, 0, 100, 100}, {0, 0, 100, 100}, nullptr, red_tex_));
-			board_[i][j].setScale(0.8);
-			board_[i][j].setInvisible();
+			board_entities_[i].emplace_back(Entity({(CELL_SIZE * (j+1.0f)) + BOARD_X_OFFSET + CELL_SIZE / 8, (CELL_SIZE * (i+1.0f)) + BOARD_Y_OFFSET + CELL_SIZE / 8}, {0, 0}, {0, 0, 100, 100}, {0, 0, 100, 100}, nullptr, red_tex_));
+			board_entities_[i][j].setScale(0.8);
+			board_entities_[i][j].setInvisible();
 			//test what the sprites look like
 			//if ((i % 2) == 0) {
-			//	board_[i][j].setFgTex(blue_tex_);
+			//	board_entities_[i][j].setFgTex(blue_tex_);
 			//}
 		}
 	}
@@ -62,7 +62,7 @@ back_to_intro_button_(BasicButton({SCREEN_WIDTH / 2 - 250, SCREEN_HEIGHT / 2, 20
 #endif
 
 	current_mouse_location_ = 0;
-	bound_to_board_ = false;
+	bound_to_board_entities_ = false;
 	bound_to_restart_screen_ = false;
 
 	colors_ = {BUBBLE, SKY_BLUE, MODS_BLUE, GAINSBORO, CLASSIC_BACKGROUND, NEW_BACKGROUND, RED, GREEN, BLUE, CYAN, PEACH, PURPLE, ORANGE_RED, WHITE, BLACK, PASTEL_BLUE, LIME_GREEN};
@@ -152,7 +152,7 @@ void PlayingState::aiMove() {
 bool PlayingState::isValidColumn(int col) {
 	bool valid = false;
 	for (int i = 0; i < NUM_ROWS; i++) {
-		if (!board_[i][col].getVisible()) {
+		if (!board_entities_[i][col].getVisible()) {
 			valid = true;
 		}
 	}
@@ -166,7 +166,7 @@ void PlayingState::placeToken(int col) {
 	bool row_set = false;
 	int row;
 	for (int i = 0; i < NUM_ROWS; i++) {
-		if (board_[i][col].getVisible()) {
+		if (board_entities_[i][col].getVisible()) {
 			row = i - 1;
 			if (row < 0) {
 				return;
@@ -179,11 +179,11 @@ void PlayingState::placeToken(int col) {
 		row	= NUM_ROWS - 1;
 	}
 	if (player2_to_move_) {
-		board_[row][col].setFgTex(blue_tex_);
+		board_entities_[row][col].setFgTex(blue_tex_);
 	} else {
-		board_[row][col].setFgTex(red_tex_);
+		board_entities_[row][col].setFgTex(red_tex_);
 	}
-	board_[row][col].setVisible();
+	board_entities_[row][col].setVisible();
 	nextPlayerToMove();
 	postTokenUpdate();
 }
@@ -195,15 +195,15 @@ void PlayingState::postTokenUpdate() {
 	bool red_won = false;
 	for (int i = 0; i < NUM_ROWS; i++) {
 		for (int j = 0; j < NUM_COLS; j++) {
-			if (!board_[i][j].getVisible()) {
+			if (!board_entities_[i][j].getVisible()) {
 				empty_space_found = true;
 			}
 			//horizontal
 			if (!won_ && j + 3 < NUM_COLS) {
-				if (board_[i][j].getVisible() && board_[i][j+1].getVisible() && board_[i][j+2].getVisible() && board_[i][j+3].getVisible()) {
-					if (board_[i][j].getFgTex() == board_[i][j+1].getFgTex() && board_[i][j+1].getFgTex() == board_[i][j+2].getFgTex() && board_[i][j+2].getFgTex() == board_[i][j+3].getFgTex()) {
+				if (board_entities_[i][j].getVisible() && board_entities_[i][j+1].getVisible() && board_entities_[i][j+2].getVisible() && board_entities_[i][j+3].getVisible()) {
+					if (board_entities_[i][j].getFgTex() == board_entities_[i][j+1].getFgTex() && board_entities_[i][j+1].getFgTex() == board_entities_[i][j+2].getFgTex() && board_entities_[i][j+2].getFgTex() == board_entities_[i][j+3].getFgTex()) {
 						won_ = true;
-						if (board_[i][j].getFgTex() == red_tex_) {
+						if (board_entities_[i][j].getFgTex() == red_tex_) {
 							red_won = true;
 						}
 					}
@@ -211,10 +211,10 @@ void PlayingState::postTokenUpdate() {
 			}
 			//vertical
 			if (!won_ && i + 3 < NUM_ROWS) {
-				if (board_[i][j].getVisible() && board_[i+1][j].getVisible() && board_[i+2][j].getVisible() && board_[i+3][j].getVisible()) {
-					if (board_[i][j].getFgTex() == board_[i+1][j].getFgTex() && board_[i+1][j].getFgTex() == board_[i+2][j].getFgTex() && board_[i+2][j].getFgTex() == board_[i+3][j].getFgTex()) {
+				if (board_entities_[i][j].getVisible() && board_entities_[i+1][j].getVisible() && board_entities_[i+2][j].getVisible() && board_entities_[i+3][j].getVisible()) {
+					if (board_entities_[i][j].getFgTex() == board_entities_[i+1][j].getFgTex() && board_entities_[i+1][j].getFgTex() == board_entities_[i+2][j].getFgTex() && board_entities_[i+2][j].getFgTex() == board_entities_[i+3][j].getFgTex()) {
 						won_ = true;
-						if (board_[i][j].getFgTex() == red_tex_) {
+						if (board_entities_[i][j].getFgTex() == red_tex_) {
 							red_won = true;
 						}
 					}
@@ -222,10 +222,10 @@ void PlayingState::postTokenUpdate() {
 			}
 			//backslash slash diagonal
 			if (!won_ && i + 3 < NUM_ROWS && j + 3 < NUM_COLS) {
-				if (board_[i][j].getVisible() && board_[i+1][j+1].getVisible() && board_[i+2][j+2].getVisible() && board_[i+3][j+3].getVisible()) {
-					if (board_[i][j].getFgTex() == board_[i+1][j+1].getFgTex() && board_[i+1][j+1].getFgTex() == board_[i+2][j+2].getFgTex() && board_[i+2][j+2].getFgTex() == board_[i+3][j+3].getFgTex()) {
+				if (board_entities_[i][j].getVisible() && board_entities_[i+1][j+1].getVisible() && board_entities_[i+2][j+2].getVisible() && board_entities_[i+3][j+3].getVisible()) {
+					if (board_entities_[i][j].getFgTex() == board_entities_[i+1][j+1].getFgTex() && board_entities_[i+1][j+1].getFgTex() == board_entities_[i+2][j+2].getFgTex() && board_entities_[i+2][j+2].getFgTex() == board_entities_[i+3][j+3].getFgTex()) {
 						won_ = true;
-						if (board_[i][j].getFgTex() == red_tex_) {
+						if (board_entities_[i][j].getFgTex() == red_tex_) {
 							red_won = true;
 						}
 					}
@@ -234,10 +234,10 @@ void PlayingState::postTokenUpdate() {
 
 			//forward slash diagonal
 			if (!won_ && i - 3 >= 0 && j + 3 < NUM_COLS) {
-				if (board_[i][j].getVisible() && board_[i-1][j+1].getVisible() && board_[i-2][j+2].getVisible() && board_[i-3][j+3].getVisible()) {
-					if (board_[i][j].getFgTex() == board_[i-1][j+1].getFgTex() && board_[i-1][j+1].getFgTex() == board_[i-2][j+2].getFgTex() && board_[i-2][j+2].getFgTex() == board_[i-3][j+3].getFgTex()) {
+				if (board_entities_[i][j].getVisible() && board_entities_[i-1][j+1].getVisible() && board_entities_[i-2][j+2].getVisible() && board_entities_[i-3][j+3].getVisible()) {
+					if (board_entities_[i][j].getFgTex() == board_entities_[i-1][j+1].getFgTex() && board_entities_[i-1][j+1].getFgTex() == board_entities_[i-2][j+2].getFgTex() && board_entities_[i-2][j+2].getFgTex() == board_entities_[i-3][j+3].getFgTex()) {
 						won_ = true;
-						if (board_[i][j].getFgTex() == red_tex_) {
+						if (board_entities_[i][j].getFgTex() == red_tex_) {
 							red_won = true;
 						}
 					}
@@ -254,7 +254,7 @@ void PlayingState::postTokenUpdate() {
 		return;
 	}
 	//ai update code
-	if (game_mode_ == game_mode::ONE_PLAYER) {
+	if (game_mode_ == game_mode::ONE_PLAYER && !goofy_ai_) {
 		for (int i = 0; i < NUM_ROWS; i++) {
 			for (int j = 0; j < NUM_COLS; j++) {
 				//horizontal
@@ -280,7 +280,7 @@ void PlayingState::draw() {
 void PlayingState::resetGame() {
 	for (int i = 0; i < NUM_ROWS; i++){
 		for (int j = 0; j < NUM_COLS; j++){
-			board_[i][j].setInvisible();
+			board_entities_[i][j].setInvisible();
 		}
 	}
 	won_ = false;
@@ -315,19 +315,19 @@ void PlayingState::nearlyFillBoard() {
 			int num = (rand() % 4) + 2;
 			switch (num) {
 				case 0:
-					board_[i][j].setFgTex(red_tex_);
+					board_entities_[i][j].setFgTex(red_tex_);
 					break;
 				case 1:
-					board_[i][j].setFgTex(blue_tex_);
+					board_entities_[i][j].setFgTex(blue_tex_);
 					break;
 				case 2:
-					board_[i][j].setFgTex(red_arrow_);
+					board_entities_[i][j].setFgTex(red_arrow_);
 					break;
 				case 3:
-					board_[i][j].setFgTex(blue_arrow_);
+					board_entities_[i][j].setFgTex(blue_arrow_);
 					break;
 			}
-			board_[i][j].setVisible();
+			board_entities_[i][j].setVisible();
 		}
 	}
 }
@@ -419,7 +419,7 @@ void PlayingState::handleInput(Game& game, const SDL_Event& event) {
 					break;
 				case SDL_MOUSEBUTTONDOWN:
 					if (!won_ && !drawn_) {
-						bound_to_board_ = true;
+						bound_to_board_entities_ = true;
 					} else {
 						bound_to_restart_screen_ = true;
 					}
@@ -433,13 +433,13 @@ void PlayingState::handleInput(Game& game, const SDL_Event& event) {
 							game.introState();
 						}
 					}
-					if (bound_to_board_) {
+					if (bound_to_board_entities_) {
 						if (checkValidMouseLocation() && !won_ && !drawn_) {
 							//parseMouseLocation();
 							tryToPlaceToken(parseMouseLocation());
 						}
 					}
-					bound_to_board_ = false;
+					bound_to_board_entities_ = false;
 					bound_to_restart_screen_ = false;
 					break;
 		}
@@ -482,7 +482,7 @@ void PlayingState::update(Game& game) {
 	//tokens
 	for (int i = 0; i < NUM_ROWS; i++) {
 		for (int j = 0; j < NUM_COLS; j++) {
-			window.render(board_[i][j].renderFgRectInfo(), board_[i][j].getFgTex());
+			window.render(board_entities_[i][j].renderFgRectInfo(), board_entities_[i][j].getFgTex());
 		}
 	}
 	if (won_ || drawn_) {

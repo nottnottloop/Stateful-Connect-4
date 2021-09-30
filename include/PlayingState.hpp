@@ -53,13 +53,14 @@ private:
 	int mouse_x_;
 	int mouse_y_;
 	int current_mouse_location_;
-	bool bound_to_board_;
+	bool bound_to_board_entities_;
 	bool bound_to_restart_screen_;
 	SDL_Texture *red_tex_;
 	SDL_Texture *blue_tex_;
 	SDL_Texture *red_arrow_;
 	SDL_Texture *blue_arrow_;
-	std::vector<std::vector<Entity>> board_;
+	int board_[NUM_ROWS][NUM_COLS];
+	std::vector<std::vector<Entity>> board_entities_;
 	std::vector<Entity> display_arrows_;
 	BasicButton restart_button_;
 	BasicButton back_to_intro_button_;
