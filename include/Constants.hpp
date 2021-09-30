@@ -4,7 +4,7 @@
 #define DEBUG_CONTROLS 1
 
 enum class game_mode {
-	SINGLE_PLAYER,
+	ONE_PLAYER,
 	TWO_PLAYER,
 	ONLINE
 };

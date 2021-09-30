@@ -44,8 +44,14 @@ void IntroState::handleInput(Game &game, const SDL_Event &event) {
 				break;
 			case SDL_MOUSEBUTTONUP:
 				if (mouse_down_) {
+					if (one_player_button_.clicked(mouse_x_, mouse_y_)) {
+						game.playingState(game_mode::ONE_PLAYER);
+					}
 					if (two_player_button_.clicked(mouse_x_, mouse_y_)) {
-						game.playingState();
+						game.playingState(game_mode::TWO_PLAYER);
+					}
+					if (internet_play_button_.clicked(mouse_x_, mouse_y_)) {
+						game.playingState(game_mode::ONLINE);
 					}
 				}
 				mouse_down_ = false;

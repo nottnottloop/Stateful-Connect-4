@@ -1,6 +1,7 @@
 #pragma once
 #include <SDL.h>
 #include "GameState.hpp"
+#include "Constants.hpp"
 
 class Game {
 public:
@@ -10,7 +11,7 @@ public:
 
 	void setState(GameState *state);
 	void introState();
-	void playingState();
+	void playingState(game_mode mode);
 	GameState *getState(GameState *state);
 
 	bool quit_;
@@ -18,4 +19,5 @@ private:
 	GameState *state_;
 	GameState *introstate_;
 	GameState *playingstate_;
+	game_mode game_mode_;
 };
