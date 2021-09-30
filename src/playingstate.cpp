@@ -17,7 +17,8 @@ won_(false), drawn_(false),
 win_text_({SCREEN_WIDTH / 2, 250}, {0, 0}),
 draw_text_({SCREEN_WIDTH / 2, 250}, {0, 0}),
 restart_button_(BasicButton({SCREEN_WIDTH / 2 + 50, SCREEN_HEIGHT / 2, 200, 100}, {0, 0}, BLACK, WHITE, GREEN, 5, "Play Again")),
-back_to_intro_button_(BasicButton({SCREEN_WIDTH / 2 - 250, SCREEN_HEIGHT / 2, 200, 100}, {0, 0}, BLACK, GAINSBORO, RED, 5, "Quit"))
+back_to_intro_button_(BasicButton({SCREEN_WIDTH / 2 - 250, SCREEN_HEIGHT / 2, 200, 100}, {0, 0}, BLACK, GAINSBORO, RED, 5, "Quit")),
+player_to_move_changed_(true)
 {
 	std::random_device seeder;
 	rd_.seed(seeder());
@@ -69,7 +70,6 @@ back_to_intro_button_(BasicButton({SCREEN_WIDTH / 2 - 250, SCREEN_HEIGHT / 2, 20
 	color_index_location_ = 0;
 
 	randomPlayerToMove();
-	updatePlayerMoveText();
 	resetGame();
 }
 
@@ -110,10 +110,18 @@ void PlayingState::nextPlayerToMove(bool force) {
 }
 
 void PlayingState::updatePlayerMoveText() {
-	if (player2_to_move_) {
-		player_to_move_text_.loadFontTexture(BLUE, "Player 2");
+	if (game_mode_ != game_mode::ONE_PLAYER) {
+		if (player2_to_move_) {
+			player_to_move_text_.loadFontTexture(BLUE, "Player 2");
+		} else {
+			player_to_move_text_.loadFontTexture(RED, "Player 1");
+		}
 	} else {
-		player_to_move_text_.loadFontTexture(RED, "Player 1");
+		if (player2_to_move_) {
+			player_to_move_text_.loadFontTexture(BLUE, "AI");
+		} else {
+			player_to_move_text_.loadFontTexture(RED, "Player");
+		}
 	}
 }
 
@@ -187,6 +195,7 @@ void PlayingState::placeToken(int col) {
 		board_entities_[row][col].setFgTex(red_tex_);
 	}
 	board_entities_[row][col].setVisible();
+	player_to_move_changed_ = true;
 	nextPlayerToMove();
 	postTokenUpdate();
 }
@@ -267,12 +276,22 @@ void PlayingState::postTokenUpdate() {
 }
 
 void PlayingState::win(bool red_won) {
-	if (red_won) {
-		win_text_.loadFontTexture(RED, "Player 1 wins!");
-		printf("RED WIN\n");
+	if (game_mode_ != game_mode::ONE_PLAYER) {
+		if (red_won) {
+			win_text_.loadFontTexture(RED, "Player 1 wins!");
+			printf("RED WIN\n");
+		} else {
+			win_text_.loadFontTexture(BLUE, "Player 2 wins!");
+			printf("BLUE WIN\n");
+		}
 	} else {
-		win_text_.loadFontTexture(BLUE, "Player 2 wins!");
-		printf("BLUE WIN\n");
+		if (red_won) {
+			win_text_.loadFontTexture(RED, "Player wins!");
+			printf("RED WIN\n");
+		} else {
+			win_text_.loadFontTexture(BLUE, "AI wins!");
+			printf("BLUE WIN\n");
+		}
 	}
 }
 
@@ -466,6 +485,10 @@ void PlayingState::update(Game& game) {
 	window.clear(colors_[color_index_location_], 0xFF);
 
 	//text to show which player's move it is
+	if (player_to_move_changed_) {
+		updatePlayerMoveText();
+		player_to_move_changed_ = false;
+	}
 	window.render(player_to_move_text_);
 	//label each column with a number that can be pressed as an alternative to mouse controls
 	for (int i = 0; i < 7; i++) {

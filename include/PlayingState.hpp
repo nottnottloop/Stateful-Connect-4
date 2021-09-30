@@ -46,6 +46,7 @@ private:
 	bool won_;
 	bool drawn_;
 	bool player2_to_move_;
+	bool player_to_move_changed_;
 	Text player_to_move_text_;
 	std::vector<Text> numbers_text_;
 	Text win_text_;
