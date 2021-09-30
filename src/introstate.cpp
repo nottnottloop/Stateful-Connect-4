@@ -42,10 +42,22 @@ void IntroState::handleInput(Game &game, const SDL_Event &event) {
 			case SDL_MOUSEBUTTONDOWN:
 				mouse_down_ = true;
 				break;
+			case SDL_KEYDOWN:
 			case SDL_MOUSEBUTTONUP:
 				if (mouse_down_) {
 					if (one_player_button_.clicked(mouse_x_, mouse_y_)) {
-						game.playingState(game_mode::ONE_PLAYER);
+						const Uint8 *state = SDL_GetKeyboardState(nullptr);
+						bool goofy_ai = false;
+						bool turbo_ai = false;
+						if (state[SDL_SCANCODE_RSHIFT] || state[SDL_SCANCODE_LSHIFT]) {
+							goofy_ai = true;
+							printf("goofy");
+						}
+						if (state[SDL_SCANCODE_RCTRL] || state[SDL_SCANCODE_LCTRL]) {
+							turbo_ai = true;
+							printf("turbo");
+						}
+						game.playingState(game_mode::ONE_PLAYER, goofy_ai, turbo_ai);
 					}
 					if (two_player_button_.clicked(mouse_x_, mouse_y_)) {
 						game.playingState(game_mode::TWO_PLAYER);

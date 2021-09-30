@@ -1,6 +1,7 @@
 #pragma once
 #include <SDL.h>
 #include <vector>
+#include <random>
 #include "GameState.hpp"
 #include "Text.hpp"
 #include "Entity.hpp"
@@ -13,14 +14,18 @@ public:
 	void handleInput(Game &game, const SDL_Event &event);
 	void update(Game &game);
 	void setGameMode(game_mode mode);
+	void setGoofyAi(bool goofy);
+	void setTurboAi(bool turbo);
 	void cycleColor(bool backward);
 	void randomPlayerToMove();
 	void nextPlayerToMove(bool force = false);
 	void updatePlayerMoveText();
 	SDL_Texture *getArrowTex();
 	void tryToPlaceToken(int col);
+	void aiMove();
+	void nextAiMoveRandom();
 	void placeToken(int col);
-	void checkWinOrDraw();
+	void postTokenUpdate();
 	void win(bool red_won);
 	void draw();
 	void resetGame();
@@ -30,7 +35,11 @@ public:
 	void nearlyFillBoard();
 #endif
 private:
+	std::mt19937_64 rd_;
 	game_mode game_mode_;
+	bool goofy_ai_;
+	bool turbo_ai_;
+	int ai_next_move_col_;
 	int color_index_location_;
 	std::vector<SDL_Color> colors_;
 	Uint32 color_cycle_ticks_;

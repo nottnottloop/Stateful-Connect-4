@@ -13,7 +13,7 @@ public:
 
 	void setState(GameState *state);
 	void introState();
-	void playingState(game_mode mode);
+	void playingState(game_mode mode, bool goofy=false, bool turbo=false);
 	GameState *getState(GameState *state);
 
 	bool quit_;

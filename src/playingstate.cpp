@@ -19,6 +19,8 @@ draw_text_({SCREEN_WIDTH / 2, 250}, {0, 0}),
 restart_button_(BasicButton({SCREEN_WIDTH / 2 + 50, SCREEN_HEIGHT / 2, 200, 100}, {0, 0}, BLACK, WHITE, GREEN, 5, "Play Again")),
 back_to_intro_button_(BasicButton({SCREEN_WIDTH / 2 - 250, SCREEN_HEIGHT / 2, 200, 100}, {0, 0}, BLACK, GAINSBORO, RED, 5, "Quit"))
 {
+	std::random_device seeder;
+	rd_.seed(seeder());
 	player_to_move_text_.openFont("res/fixedsys.ttf", 50);
 	win_text_.openFont("res/fixedsys.ttf", 50);
 	draw_text_.openFont("res/fixedsys.ttf", 50);
@@ -87,11 +89,12 @@ void PlayingState::cycleColor(bool backward) {
 	}
 }
 
+void PlayingState::nextAiMoveRandom() {
+	ai_next_move_col_ = rd_() % NUM_COLS;
+}
+
 void PlayingState::randomPlayerToMove() {
-	std::random_device seeder;
-	std::mt19937_64 rd;
-	rd.seed(seeder());
-	if ((rd() % 2)) {
+	if ((rd_() % 2)) {
 		player2_to_move_ = true;
 	} else {
 		player2_to_move_ = false;
@@ -137,6 +140,18 @@ void PlayingState::tryToPlaceToken(int col) {
 	}
 }
 
+void PlayingState::aiMove() {
+	if (!player2_to_move_) {
+		return;
+	}
+	if (goofy_ai_) {
+		nextAiMoveRandom();
+		placeToken(ai_next_move_col_);
+	} else {
+
+	}
+}
+
 void PlayingState::placeToken(int col) {
 	if (won_ || drawn_) {
 		return;
@@ -163,9 +178,12 @@ void PlayingState::placeToken(int col) {
 	}
 	board_[row][col].setVisible();
 	nextPlayerToMove();
+	postTokenUpdate();
 }
 
-void PlayingState::checkWinOrDraw() {
+//this function will check for whether the game is won or drawn
+//it will also update the next column it thinks the AI should move to next
+void PlayingState::postTokenUpdate() {
 	bool empty_space_found = false;
 	bool red_won = false;
 	for (int i = 0; i < NUM_ROWS; i++) {
@@ -302,6 +320,14 @@ void PlayingState::setGameMode(game_mode mode) {
 	game_mode_ = mode;
 }
 
+void PlayingState::setGoofyAi(bool goofy) {
+	goofy_ai_ = goofy;
+}
+
+void PlayingState::setTurboAi(bool turbo) {
+	turbo_ai_ = turbo;
+}
+
 void PlayingState::handleInput(Game& game, const SDL_Event& event) {
 		switch (event.type) {
 			case SDL_QUIT:
@@ -382,7 +408,6 @@ void PlayingState::handleInput(Game& game, const SDL_Event& event) {
 						if (checkValidMouseLocation() && !won_ && !drawn_) {
 							//parseMouseLocation();
 							tryToPlaceToken(parseMouseLocation());
-							checkWinOrDraw();
 						}
 					}
 					bound_to_board_ = false;
@@ -392,6 +417,9 @@ void PlayingState::handleInput(Game& game, const SDL_Event& event) {
 }
 
 void PlayingState::update(Game& game) {
+	if (game_mode_ == game_mode::ONE_PLAYER) {
+		aiMove();
+	}
 	window.clear(colors_[color_index_location_], 0xFF);
 
 	//text to show which player's move it is

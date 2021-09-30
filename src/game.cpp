@@ -29,8 +29,10 @@ void Game::introState() {
 }
 
 //set the state to playing with a given game mode
-void Game::playingState(game_mode mode) {
+void Game::playingState(game_mode mode, bool goofy, bool turbo) {
 	playingstate_->setGameMode(mode);
+	playingstate_->setGoofyAi(goofy);
+	playingstate_->setTurboAi(turbo);
 	state_ = playingstate_;
 }
 
