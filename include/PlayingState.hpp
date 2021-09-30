@@ -23,7 +23,6 @@ public:
 	SDL_Texture *getArrowTex();
 	void tryToPlaceToken(int col);
 	void aiMove();
-	void nextAiMoveRandom();
 	void placeToken(int col);
 	void postTokenUpdate();
 	void win(bool red_won);
@@ -39,7 +38,6 @@ private:
 	game_mode game_mode_;
 	bool goofy_ai_;
 	bool turbo_ai_;
-	int ai_next_move_col_;
 	int color_index_location_;
 	std::vector<SDL_Color> colors_;
 	Uint32 color_cycle_ticks_;

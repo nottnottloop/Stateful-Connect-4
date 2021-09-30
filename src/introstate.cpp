@@ -51,11 +51,9 @@ void IntroState::handleInput(Game &game, const SDL_Event &event) {
 						bool turbo_ai = false;
 						if (state[SDL_SCANCODE_RSHIFT] || state[SDL_SCANCODE_LSHIFT]) {
 							goofy_ai = true;
-							printf("goofy");
 						}
 						if (state[SDL_SCANCODE_RCTRL] || state[SDL_SCANCODE_LCTRL]) {
 							turbo_ai = true;
-							printf("turbo");
 						}
 						game.playingState(game_mode::ONE_PLAYER, goofy_ai, turbo_ai);
 					}

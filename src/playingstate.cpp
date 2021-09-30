@@ -89,10 +89,6 @@ void PlayingState::cycleColor(bool backward) {
 	}
 }
 
-void PlayingState::nextAiMoveRandom() {
-	ai_next_move_col_ = rd_() % NUM_COLS;
-}
-
 void PlayingState::randomPlayerToMove() {
 	if ((rd_() % 2)) {
 		player2_to_move_ = true;
@@ -141,14 +137,15 @@ void PlayingState::tryToPlaceToken(int col) {
 }
 
 void PlayingState::aiMove() {
-	if (!player2_to_move_) {
+	if (!player2_to_move_ || won_ || drawn_) {
 		return;
 	}
 	if (goofy_ai_) {
-		nextAiMoveRandom();
-		placeToken(ai_next_move_col_);
+		int col = rd_() % NUM_COLS;
+		printf("Goofy AI: %d\n", col);
+		placeToken(col);
 	} else {
-
+		
 	}
 }
 
@@ -240,9 +237,19 @@ void PlayingState::postTokenUpdate() {
 	}
 	if (won_) {
 		win(red_won);
+		return;
 	}
 	if (!empty_space_found) {
 		draw();
+		return;
+	}
+	//ai update code
+	if (game_mode_ == game_mode::ONE_PLAYER) {
+		for (int i = 0; i < NUM_ROWS; i++) {
+			for (int j = 0; j < NUM_COLS; j++) {
+				//horizontal
+			}
+		}
 	}
 }
 
@@ -321,10 +328,16 @@ void PlayingState::setGameMode(game_mode mode) {
 }
 
 void PlayingState::setGoofyAi(bool goofy) {
+	if (goofy) {
+		printf("goofy");
+	}
 	goofy_ai_ = goofy;
 }
 
 void PlayingState::setTurboAi(bool turbo) {
+	if (turbo) {
+		printf("turbo");
+	}
 	turbo_ai_ = turbo;
 }
 
