@@ -13,7 +13,7 @@ public:
 	void handleInput(Game &game, const SDL_Event &event);
 	void update(Game &game);
 	void setGameMode(game_mode mode);
-	void nextBgColor();
+	void cycleColor(bool backward);
 	void randomPlayerToMove();
 	void nextPlayerToMove(bool force = false);
 	void updatePlayerMoveText();
@@ -32,6 +32,7 @@ private:
 	game_mode game_mode_;
 	int color_index_location_;
 	std::vector<SDL_Color> colors_;
+	Uint32 color_cycle_ticks_;
 	bool won_;
 	bool drawn_;
 	bool player2_to_move_;

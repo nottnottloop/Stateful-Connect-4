@@ -17,7 +17,7 @@ won_(false), drawn_(false),
 win_text_({SCREEN_WIDTH / 2, 250}, {0, 0}),
 draw_text_({SCREEN_WIDTH / 2, 250}, {0, 0}),
 restart_button_(BasicButton({SCREEN_WIDTH / 2 + 50, SCREEN_HEIGHT / 2, 200, 100}, {0, 0}, BLACK, WHITE, GREEN, 5, "Play Again")),
-back_to_intro_button_(BasicButton({SCREEN_WIDTH / 2 - 250, SCREEN_HEIGHT / 2, 200, 100}, {0, 0}, BLACK, GAINSBORO, RED, 5, "Quit")) 
+back_to_intro_button_(BasicButton({SCREEN_WIDTH / 2 - 250, SCREEN_HEIGHT / 2, 200, 100}, {0, 0}, BLACK, GAINSBORO, RED, 5, "Quit"))
 {
 	player_to_move_text_.openFont("res/fixedsys.ttf", 50);
 	win_text_.openFont("res/fixedsys.ttf", 50);
@@ -70,10 +70,20 @@ back_to_intro_button_(BasicButton({SCREEN_WIDTH / 2 - 250, SCREEN_HEIGHT / 2, 20
 	updatePlayerMoveText();
 }
 
-void PlayingState::nextBgColor() {
-	color_index_location_++;
-	if (color_index_location_ > colors_.size() - 1) {
-		color_index_location_ = 0;
+void PlayingState::cycleColor(bool backward) {
+	if (SDL_GetTicks() - color_cycle_ticks_ > COLOR_CYCLE_SPEED) {
+		if (backward) {
+			color_index_location_--;
+			if (color_index_location_ < 0) {
+				color_index_location_ = colors_.size() - 1;
+			}
+		} else {
+			color_index_location_++;
+			if (color_index_location_ > colors_.size() - 1) {
+				color_index_location_ = 0;
+			}
+		}
+		color_cycle_ticks_ = SDL_GetTicks();
 	}
 }
 
@@ -309,7 +319,10 @@ void PlayingState::handleInput(Game& game, const SDL_Event& event) {
 						placeToken(6);
 						break;
 					case SDLK_c:
-						nextBgColor();
+						cycleColor(false);
+						break;
+					case SDLK_x:
+						cycleColor(true);
 						break;
 #ifdef DEBUG_CONTROLS
 					case SDLK_SPACE:
