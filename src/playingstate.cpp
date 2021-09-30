@@ -26,6 +26,7 @@ player_to_move_changed_(true)
 	player_to_move_text_.openFont("res/fixedsys.ttf", 50);
 	win_text_.openFont("res/fixedsys.ttf", 50);
 	draw_text_.openFont("res/fixedsys.ttf", 50);
+	draw_text_.loadFontTexture(PURPLE, "DRAW");
 	blue_tex_ = window.loadTexture("res/blue.png");
 	red_tex_ = window.loadTexture("res/red.png");
 	blue_arrow_ = window.loadTexture("res/bluearrow.png");
@@ -278,17 +279,23 @@ void PlayingState::checkWinAndDraw() {
 
 void PlayingState::findBestAiMove() {
 	if (game_mode_ == game_mode::ONE_PLAYER && !goofy_ai_) {
+		ScoreMove random = {0, rd_() % NUM_COLS};
+		while (!isValidColumn(random.move)) {
+			random.move = rd_() % NUM_COLS;
+		}
 		//horizontal
-
 		ScoreMove best_horizontal = {0, 0};
 		for (int r = 0; r < NUM_ROWS; r++) {
-			for (int c = 0; c < NUM_COLS - 4; c++) {
+			for (int c = 0; c < NUM_COLS - 1; c++) {
 				if (isValidColumn(c)) {
 					auto temp_board = board_;
 					placeToken(c, temp_board, false);
-					int horizontal_score = 0;
-					for (int add = 0; add < 4; add++) {
-						if (temp_board[r][c+add] == AI_PIECE) {
+					for (int check = 0; check < 4; check++) {
+						if (c + check > NUM_COLS - 1) {
+							continue;
+						}
+						int horizontal_score = 0;
+						if (temp_board[r][c+check] == AI_PIECE) {
 							horizontal_score++;
 						}
 						if (horizontal_score > best_horizontal.score) {
@@ -318,10 +325,15 @@ void PlayingState::findBestAiMove() {
 			}
 		}
 
-		ScoreMove arr[] = {best_horizontal, best_vertical, best_backslash, best_forwardslash};
+		ScoreMove arr[] = {random, best_horizontal, best_vertical, best_backslash, best_forwardslash};
 
-		//std::sort(arr, arr + 3, [](ScoreMove a, ScoreMove b) { return a.score > b.score;});
-		printf("%d %d %d %d", arr[0].score, arr[1].score, arr[2].score, arr[3].score);
+		printf("Random: %d %d\n", arr[0].score, arr[0].move);
+		printf("Horizontal: %d %d\n", arr[1].score, arr[1].move);
+		printf("Vertical: %d %d\n", arr[2].score, arr[2].move);
+		printf("Backslash: %d %d\n", arr[3].score, arr[3].move);
+		printf("Forwardslash: %d %d\n", arr[4].score, arr[4].move);
+		printf("Total scores: %d %d %d %d %d\n\n", arr[0].score, arr[1].score, arr[2].score, arr[3].score, arr[4].score);
+		std::sort(arr, arr + 3, [](ScoreMove a, ScoreMove b) { return a.score > b.score;});
 		next_ai_move_ = arr[0].move;
 	}
 }
@@ -347,6 +359,7 @@ void PlayingState::win(bool red_won) {
 }
 
 void PlayingState::draw() {
+	drawn_ = true;
 	printf("DRAW\n");
 }
 
@@ -490,6 +503,9 @@ void PlayingState::handleInput(Game& game, const SDL_Event& event) {
 						break;
 					case SDLK_l:
 						nearlyFillBoard();
+						break;
+					case SDLK_d:
+						draw();
 						break;
 #endif
 				}
