@@ -3,6 +3,12 @@
 
 #define DEBUG_CONTROLS 1
 
+enum class game_mode {
+	SINGLE_PLAYER,
+	TWO_PLAYER,
+	ONLINE
+};
+
 constexpr int SCREEN_WIDTH = 1024;
 constexpr int SCREEN_HEIGHT = 768;
 
