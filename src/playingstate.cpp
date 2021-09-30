@@ -70,6 +70,7 @@ back_to_intro_button_(BasicButton({SCREEN_WIDTH / 2 - 250, SCREEN_HEIGHT / 2, 20
 
 	randomPlayerToMove();
 	updatePlayerMoveText();
+	resetGame();
 }
 
 void PlayingState::cycleColor(bool backward) {
@@ -179,8 +180,10 @@ void PlayingState::placeToken(int col) {
 		row	= NUM_ROWS - 1;
 	}
 	if (player2_to_move_) {
+		board_[row][col] = 2;
 		board_entities_[row][col].setFgTex(blue_tex_);
 	} else {
+		board_[row][col] = 1;
 		board_entities_[row][col].setFgTex(red_tex_);
 	}
 	board_entities_[row][col].setVisible();
@@ -281,6 +284,7 @@ void PlayingState::resetGame() {
 	for (int i = 0; i < NUM_ROWS; i++){
 		for (int j = 0; j < NUM_COLS; j++){
 			board_entities_[i][j].setInvisible();
+			board_[i][j] = 0;
 		}
 	}
 	won_ = false;
@@ -391,6 +395,16 @@ void PlayingState::handleInput(Game& game, const SDL_Event& event) {
 							printf("%d", isValidColumn(col));
 						}
 						printf("\n");
+						break;
+					case SDLK_j:
+						printf("---\n");
+						for (int row = 0; row < NUM_ROWS; row++) {
+							for (int col = 0; col < NUM_COLS; col++) {
+								printf("%d ", board_[row][col]);
+							}
+							printf("\n");
+						}
+						printf("---\n");
 						break;
 					case SDLK_SPACE:
 						nextPlayerToMove(true);
