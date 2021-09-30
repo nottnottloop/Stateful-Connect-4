@@ -1,12 +1,13 @@
 #include <iostream>
 #include <SDL.h>
+#include <random>
+#include <algorithm>
 #include "PlayingState.hpp"
 #include "Text.hpp"
 #include "RenderWindow.hpp"
 #include "Game.hpp"
 #include "Constants.hpp"
 #include "BasicButton.hpp"
-#include <random>
 
 extern RenderWindow window;
 
@@ -154,7 +155,8 @@ void PlayingState::aiMove() {
 		printf("Goofy AI: %d\n", col);
 		placeToken(col, board_, true);
 	} else {
-		
+		findBestAiMove();
+		placeToken(next_ai_move_, board_, true);
 	}
 }
 
@@ -199,17 +201,17 @@ void PlayingState::placeToken(int col, std::array<std::array<int, NUM_COLS>, NUM
 			board_entities_[row][col].setFgTex(red_tex_);
 		}
 	}
-	board_entities_[row][col].setVisible();
 	if (real) {
+		board_entities_[row][col].setVisible();
 		player_to_move_changed_ = true;
 		nextPlayerToMove();
-		postTokenUpdate();
+		checkWinAndDraw();
 	}
 }
 
 //this function will check for whether the game is won or drawn
 //it will also update the next column it thinks the AI should move to next
-void PlayingState::postTokenUpdate() {
+void PlayingState::checkWinAndDraw() {
 	bool empty_space_found = false;
 	bool red_won = false;
 	for (int i = 0; i < NUM_ROWS; i++) {
@@ -272,16 +274,55 @@ void PlayingState::postTokenUpdate() {
 		draw();
 		return;
 	}
-	//ai update code
+}
+
+void PlayingState::findBestAiMove() {
 	if (game_mode_ == game_mode::ONE_PLAYER && !goofy_ai_) {
+		//horizontal
+
+		ScoreMove best_horizontal = {0, 0};
 		for (int r = 0; r < NUM_ROWS; r++) {
-			for (int c = 0; c < NUM_COLS; c++) {
-				//horizontal
+			for (int c = 0; c < NUM_COLS - 4; c++) {
 				if (isValidColumn(c)) {
 					auto temp_board = board_;
+					placeToken(c, temp_board, false);
+					int horizontal_score = 0;
+					for (int add = 0; add < 4; add++) {
+						if (temp_board[r][c+add] == AI_PIECE) {
+							horizontal_score++;
+						}
+						if (horizontal_score > best_horizontal.score) {
+							best_horizontal.score = horizontal_score;
+							best_horizontal.move = c;
+						}
+					}
 				}
 			}
 		}
+		//vertical
+		ScoreMove best_vertical = {0, 0};
+		for (int r = 0; r < NUM_ROWS; r++) {
+			for (int c = 0; c < NUM_COLS - 4; c++) {
+			}
+		}
+		//backslash
+		ScoreMove best_backslash = {0, 0};
+		for (int r = 0; r < NUM_ROWS; r++) {
+			for (int c = 0; c < NUM_COLS - 4; c++) {
+			}
+		}
+		//forwardslash
+		ScoreMove best_forwardslash = {0, 0};
+		for (int r = 0; r < NUM_ROWS; r++) {
+			for (int c = 0; c < NUM_COLS - 4; c++) {
+			}
+		}
+
+		ScoreMove arr[] = {best_horizontal, best_vertical, best_backslash, best_forwardslash};
+
+		//std::sort(arr, arr + 3, [](ScoreMove a, ScoreMove b) { return a.score > b.score;});
+		printf("%d %d %d %d", arr[0].score, arr[1].score, arr[2].score, arr[3].score);
+		next_ai_move_ = arr[0].move;
 	}
 }
 
@@ -495,10 +536,10 @@ void PlayingState::update(Game& game) {
 	window.clear(colors_[color_index_location_], 0xFF);
 
 	//text to show which player's move it is
-	if (player_to_move_changed_) {
+	//if (player_to_move_changed_) {
 		updatePlayerMoveText();
-		player_to_move_changed_ = false;
-	}
+		//player_to_move_changed_ = false;
+	//}
 	window.render(player_to_move_text_);
 	//label each column with a number that can be pressed as an alternative to mouse controls
 	for (int i = 0; i < 7; i++) {

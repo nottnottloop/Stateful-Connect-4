@@ -11,6 +11,9 @@
 
 class PlayingState : public GameState {
 public:
+	struct ScoreMove {
+		int score, move;
+	};
 	PlayingState();
 	void handleInput(Game &game, const SDL_Event &event);
 	void update(Game &game);
@@ -26,7 +29,8 @@ public:
 	void aiMove();
 	bool isValidColumn(int col);
 	void placeToken(int col, std::array<std::array<int, NUM_COLS>, NUM_ROWS> &board, bool real);
-	void postTokenUpdate();
+	void checkWinAndDraw();
+	void findBestAiMove();
 	void win(bool red_won);
 	void draw();
 	void resetGame();
