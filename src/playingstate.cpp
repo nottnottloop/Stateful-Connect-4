@@ -149,6 +149,16 @@ void PlayingState::aiMove() {
 	}
 }
 
+bool PlayingState::isValidColumn(int col) {
+	bool valid = false;
+	for (int i = 0; i < NUM_ROWS; i++) {
+		if (!board_[i][col].getVisible()) {
+			valid = true;
+		}
+	}
+	return valid;
+}
+
 void PlayingState::placeToken(int col) {
 	if (won_ || drawn_) {
 		return;
@@ -376,6 +386,12 @@ void PlayingState::handleInput(Game& game, const SDL_Event& event) {
 						cycleColor(true);
 						break;
 #ifdef DEBUG_CONTROLS
+					case SDLK_h:
+						for (int col = 0; col < NUM_COLS; col++){
+							printf("%d", isValidColumn(col));
+						}
+						printf("\n");
+						break;
 					case SDLK_SPACE:
 						nextPlayerToMove(true);
 						break;
