@@ -63,7 +63,7 @@ back_to_intro_button_(BasicButton({SCREEN_WIDTH / 2 - 250, SCREEN_HEIGHT / 2, 20
 	bound_to_board_ = false;
 	bound_to_restart_screen_ = false;
 
-	colors_ = {BUBBLE, SKY_BLUE, GAINSBORO, CLASSIC_BACKGROUND, NEW_BACKGROUND, RED, GREEN, BLUE, CYAN, PEACH, PURPLE, ORANGE_RED, WHITE, BLACK, PASTEL_BLUE, LIME_GREEN};
+	colors_ = {BUBBLE, SKY_BLUE, MODS_BLUE, GAINSBORO, CLASSIC_BACKGROUND, NEW_BACKGROUND, RED, GREEN, BLUE, CYAN, PEACH, PURPLE, ORANGE_RED, WHITE, BLACK, PASTEL_BLUE, LIME_GREEN};
 	color_index_location_ = 0;
 
 	randomPlayerToMove();
