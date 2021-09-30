@@ -1,6 +1,7 @@
 #pragma once
 #include <SDL.h>
 #include <vector>
+#include <array>
 #include <random>
 #include "GameState.hpp"
 #include "Text.hpp"
@@ -24,7 +25,7 @@ public:
 	void tryToPlaceToken(int col);
 	void aiMove();
 	bool isValidColumn(int col);
-	void placeToken(int col);
+	void placeToken(int col, std::array<std::array<int, NUM_COLS>, NUM_ROWS> &board, bool real);
 	void postTokenUpdate();
 	void win(bool red_won);
 	void draw();
@@ -60,7 +61,7 @@ private:
 	SDL_Texture *blue_tex_;
 	SDL_Texture *red_arrow_;
 	SDL_Texture *blue_arrow_;
-	int board_[NUM_ROWS][NUM_COLS];
+	std::array<std::array<int, NUM_COLS>, NUM_ROWS> board_;
 	std::vector<std::vector<Entity>> board_entities_;
 	std::vector<Entity> display_arrows_;
 	BasicButton restart_button_;

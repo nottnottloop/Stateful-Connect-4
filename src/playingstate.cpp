@@ -137,10 +137,10 @@ SDL_Texture *PlayingState::getArrowTex() {
 //the 2 player, same computer code was written first so this allows that code to remain untouched
 void PlayingState::tryToPlaceToken(int col) {
 	if (game_mode_ == game_mode::TWO_PLAYER) {
-		placeToken(col);
+		placeToken(col, board_, true);
 	} else {
 		if (!player2_to_move_) {
-			placeToken(col);
+			placeToken(col, board_, true);
 		}
 	}
 }
@@ -152,7 +152,7 @@ void PlayingState::aiMove() {
 	if (goofy_ai_) {
 		int col = rd_() % NUM_COLS;
 		printf("Goofy AI: %d\n", col);
-		placeToken(col);
+		placeToken(col, board_, true);
 	} else {
 		
 	}
@@ -168,14 +168,15 @@ bool PlayingState::isValidColumn(int col) {
 	return valid;
 }
 
-void PlayingState::placeToken(int col) {
+//fake boards are tested when real is set to false for the purpose of ai
+void PlayingState::placeToken(int col, std::array<std::array<int, NUM_COLS>, NUM_ROWS> &board, bool real) {
 	if (won_ || drawn_) {
 		return;
 	}
 	bool row_set = false;
 	int row;
 	for (int i = 0; i < NUM_ROWS; i++) {
-		if (board_entities_[i][col].getVisible()) {
+		if (board[i][col] != 0) {
 			row = i - 1;
 			if (row < 0) {
 				return;
@@ -188,16 +189,22 @@ void PlayingState::placeToken(int col) {
 		row	= NUM_ROWS - 1;
 	}
 	if (player2_to_move_) {
-		board_[row][col] = 2;
-		board_entities_[row][col].setFgTex(blue_tex_);
+		board[row][col] = 2;
+		if (real) {
+			board_entities_[row][col].setFgTex(blue_tex_);
+		}
 	} else {
-		board_[row][col] = 1;
-		board_entities_[row][col].setFgTex(red_tex_);
+		board[row][col] = 1;
+		if (real) {
+			board_entities_[row][col].setFgTex(red_tex_);
+		}
 	}
 	board_entities_[row][col].setVisible();
-	player_to_move_changed_ = true;
-	nextPlayerToMove();
-	postTokenUpdate();
+	if (real) {
+		player_to_move_changed_ = true;
+		nextPlayerToMove();
+		postTokenUpdate();
+	}
 }
 
 //this function will check for whether the game is won or drawn
@@ -267,9 +274,12 @@ void PlayingState::postTokenUpdate() {
 	}
 	//ai update code
 	if (game_mode_ == game_mode::ONE_PLAYER && !goofy_ai_) {
-		for (int i = 0; i < NUM_ROWS; i++) {
-			for (int j = 0; j < NUM_COLS; j++) {
+		for (int r = 0; r < NUM_ROWS; r++) {
+			for (int c = 0; c < NUM_COLS; c++) {
 				//horizontal
+				if (isValidColumn(c)) {
+					auto temp_board = board_;
+				}
 			}
 		}
 	}
