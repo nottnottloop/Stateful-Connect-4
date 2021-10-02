@@ -147,6 +147,13 @@ void PlayingState::tryToPlaceToken(int col) {
 	}
 }
 
+bool PlayingState::positionTaken(int row, int col) {
+	if (board_[row][col] != EMPTY_SPACE) {
+		return true;
+	}
+	return false;
+}
+
 void PlayingState::aiMove() {
 	if (!player2_to_move_ || won_ || drawn_) {
 		return;
@@ -280,18 +287,18 @@ void PlayingState::checkWinAndDraw() {
 
 void PlayingState::findBestAiMove() {
 	if (game_mode_ == game_mode::ONE_PLAYER && !goofy_ai_) {
-		ScoreMove random = {0, rd_() % NUM_COLS};
+		ScoreMove random = {1, rd_() % NUM_COLS};
 		while (!isValidColumn(random.move)) {
 			random.move = rd_() % NUM_COLS;
 		}
 		//horizontal
 		ScoreMove best_horizontal = {0, 0};
 		for (int r = 0; r < NUM_ROWS; r++) {
-			for (int c = 0; c < NUM_COLS - 1; c++) {
-				if (isValidColumn(c)) {
-					auto temp_board = board_;
-					placeToken(c, temp_board, false);
-					for (int check = 0; check < NUM_COLS - 4; check++) {
+			for (int c = 0; c < NUM_COLS; c++) {
+				if (!positionTaken(r, c)) {
+					for (int check = 0; check < NUM_COLS - 3; check++) {
+						auto temp_board = board_;
+						placeToken(c, temp_board, false);
 						int horizontal_score = 0;
 						for (int add = 0; add < 4; add++) {
 							if (temp_board[r][check+add] == AI_PIECE) {
@@ -311,7 +318,27 @@ void PlayingState::findBestAiMove() {
 		//vertical
 		ScoreMove best_vertical = {0, 0};
 		for (int r = 0; r < NUM_ROWS; r++) {
-			for (int c = 0; c < NUM_COLS - 4; c++) {
+			for (int c = 0; c < NUM_COLS; c++) {
+				if (!positionTaken(r, c)) {
+					for (int check = 5; check > NUM_ROWS - 3; check--) {
+						auto temp_board = board_;
+						placeToken(c, temp_board, false);
+						int vertical_score = 0;
+						for (int take = 0; take < 4; take++) {
+							if (temp_board[check-take][c] == AI_PIECE) {
+								vertical_score++;
+							if (vertical_score > best_vertical.score) {
+								best_vertical.score = vertical_score;
+								best_vertical.move = c;
+								} else if (vertical_score == best_vertical.score && ((rd_() % 2) % 2)) {
+									best_vertical.move = c;
+								} else {
+									break;
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 		//backslash
@@ -335,7 +362,7 @@ void PlayingState::findBestAiMove() {
 		printf("Backslash: %d %d\n", arr[3].score, arr[3].move);
 		printf("Forwardslash: %d %d\n", arr[4].score, arr[4].move);
 		printf("Total scores: %d %d %d %d %d\n", arr[0].score, arr[1].score, arr[2].score, arr[3].score, arr[4].score);
-		std::sort(arr, arr + 3, [](ScoreMove a, ScoreMove b) { return a.score > b.score;});
+		std::sort(arr, arr + 4, [](ScoreMove a, ScoreMove b) { return a.score > b.score;});
 		next_ai_move_ = arr[0].move;
 	}
 }

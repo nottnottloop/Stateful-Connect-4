@@ -27,6 +27,7 @@ public:
 	SDL_Texture *getArrowTex();
 	void tryToPlaceToken(int col);
 	void aiMove();
+	bool positionTaken(int row, int col);
 	bool isValidColumn(int col);
 	void placeToken(int col, std::array<std::array<int, NUM_COLS>, NUM_ROWS> &board, bool real);
 	void checkWinAndDraw();
