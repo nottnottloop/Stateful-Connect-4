@@ -30,6 +30,7 @@ public:
 	bool isValidColumn(int col);
 	void placeToken(int col, std::array<std::array<int, NUM_COLS>, NUM_ROWS> &board, bool real);
 	void checkWinAndDraw();
+	int scorePosition(int piece);
 	void findBestAiMove();
 	void win(bool red_won);
 	void draw();

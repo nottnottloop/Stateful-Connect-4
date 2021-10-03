@@ -158,6 +158,7 @@ void PlayingState::aiMove() {
 	} else {
 		findBestAiMove();
 		placeToken(next_ai_move_, board_, true);
+		player_to_move_changed_ = true;
 		printf("AI moves: %d\n\n", next_ai_move_);
 	}
 }
@@ -278,6 +279,18 @@ void PlayingState::checkWinAndDraw() {
 	}
 }
 
+int PlayingState::scorePosition(int piece) {
+	//horizontal
+	for (int r = 0; r < NUM_ROWS; r++) {
+		auto row_array = board_[r];
+		for (int c = 0; c < NUM_COLS - 3; c++) {
+			std::array<int, 4> window;
+			std::copy(row_array.begin() + c, row_array.begin() + c + 4, window.begin());
+		}
+	}
+	return 0;
+}
+
 void PlayingState::findBestAiMove() {
 	if (game_mode_ == game_mode::ONE_PLAYER && !goofy_ai_) {
 		ScoreMove random = {0, rd_() % NUM_COLS};
@@ -296,10 +309,10 @@ void PlayingState::findBestAiMove() {
 						for (int add = 0; add < 4; add++) {
 							if (temp_board[r][check+add] == AI_PIECE) {
 								horizontal_score++;
-							if (horizontal_score > best_horizontal.score) {
-								best_horizontal.score = horizontal_score;
-								best_horizontal.move = c;
-								}
+								if (horizontal_score > best_horizontal.score) {
+									best_horizontal.score = horizontal_score;
+									best_horizontal.move = c;
+									}
 							} else {
 								break;
 							}
@@ -554,10 +567,10 @@ void PlayingState::update(Game& game) {
 	window.clear(colors_[color_index_location_], 0xFF);
 
 	//text to show which player's move it is
-	//if (player_to_move_changed_) {
+	if (player_to_move_changed_) {
 		updatePlayerMoveText();
-		//player_to_move_changed_ = false;
-	//}
+		player_to_move_changed_ = false;
+	}
 	window.render(player_to_move_text_);
 	//label each column with a number that can be pressed as an alternative to mouse controls
 	for (int i = 0; i < 7; i++) {

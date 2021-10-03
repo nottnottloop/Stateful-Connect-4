@@ -3,6 +3,7 @@ set (CMAKE_CXX_STANDARD 17)
 
 project ("Connect 4")
 
+
 set (SOURCES
 	src/main.cpp
 	src/renderwindow.cpp
