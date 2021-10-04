@@ -31,10 +31,10 @@ public:
 	void aiMove();
 	bool isValidColumn(int col);
 	void placeToken(int col, Board &board, bool real);
-	void checkWinAndDraw(bool real=true);
+	bool checkWinAndDraw(Board board, bool real=true);
 	int evaluateWindow(Window window, int piece);
 	int scorePosition(Board &board, int piece);
-	bool isTerminalNode();
+	//bool isTerminalNode(Board board);
 	int minimax(Board board, int depth, int maximising_player);
 	int pickBestMove(int piece);
 	void win(bool red_won);

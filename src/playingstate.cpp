@@ -208,74 +208,68 @@ void PlayingState::placeToken(int col, Board &board, bool real) {
 		board_entities_[row][col].setVisible();
 		player_to_move_changed_ = true;
 		nextPlayerToMove();
-		checkWinAndDraw();
+		checkWinAndDraw(board_, true);
 	}
 }
 
 //this function will check for whether the game is won or drawn
 //it will also update the next column it thinks the AI should move to next
-bool PlayingState::checkWinAndDraw(bool real) {
+bool PlayingState::checkWinAndDraw(Board board, bool real) {
 	bool empty_space_found = false;
+	bool won = false;
 	bool red_won = false;
 	for (int i = 0; i < NUM_ROWS; i++) {
 		for (int j = 0; j < NUM_COLS; j++) {
-			if (!board_entities_[i][j].getVisible()) {
+			if (board[i][j] == EMPTY_PIECE) {
 				empty_space_found = true;
 			}
 			//horizontal
-			if (!won_ && j + 3 < NUM_COLS) {
-				if (board_entities_[i][j].getVisible() && board_entities_[i][j+1].getVisible() && board_entities_[i][j+2].getVisible() && board_entities_[i][j+3].getVisible()) {
-					if (board_entities_[i][j].getFgTex() == board_entities_[i][j+1].getFgTex() && board_entities_[i][j+1].getFgTex() == board_entities_[i][j+2].getFgTex() && board_entities_[i][j+2].getFgTex() == board_entities_[i][j+3].getFgTex()) {
-						won_ = true;
-						if (board_entities_[i][j].getFgTex() == red_tex_) {
-							red_won = true;
-						}
+			if (!won && j + 3 < NUM_COLS) {
+				if (board[i][j] != EMPTY_PIECE && board[i][j] == board[i][j+1] && board[i][j+1] == board[i][j+2] && board[i][j+2] == board[i][j+3]) {
+					won = true;
+					if (board[i][j] == PLAYER_PIECE) {
+						red_won = true;
 					}
 				}
 			}
 			//vertical
-			if (!won_ && i + 3 < NUM_ROWS) {
-				if (board_entities_[i][j].getVisible() && board_entities_[i+1][j].getVisible() && board_entities_[i+2][j].getVisible() && board_entities_[i+3][j].getVisible()) {
-					if (board_entities_[i][j].getFgTex() == board_entities_[i+1][j].getFgTex() && board_entities_[i+1][j].getFgTex() == board_entities_[i+2][j].getFgTex() && board_entities_[i+2][j].getFgTex() == board_entities_[i+3][j].getFgTex()) {
-						won_ = true;
-						if (board_entities_[i][j].getFgTex() == red_tex_) {
-							red_won = true;
-						}
+			if (!won && i + 3 < NUM_ROWS) {
+				if (board[i][j] != EMPTY_PIECE && board[i][j] == board[i+1][j] && board[i+1][j] == board[i+2][j] && board[i+2][j] == board[i+3][j]) {
+					won = true;
+					if (board[i][j] == PLAYER_PIECE) {
+						red_won = true;
 					}
 				}
 			}
 			//backslash slash diagonal
-			if (!won_ && i + 3 < NUM_ROWS && j + 3 < NUM_COLS) {
-				if (board_entities_[i][j].getVisible() && board_entities_[i+1][j+1].getVisible() && board_entities_[i+2][j+2].getVisible() && board_entities_[i+3][j+3].getVisible()) {
-					if (board_entities_[i][j].getFgTex() == board_entities_[i+1][j+1].getFgTex() && board_entities_[i+1][j+1].getFgTex() == board_entities_[i+2][j+2].getFgTex() && board_entities_[i+2][j+2].getFgTex() == board_entities_[i+3][j+3].getFgTex()) {
-						won_ = true;
-						if (board_entities_[i][j].getFgTex() == red_tex_) {
+			if (!won && i + 3 < NUM_ROWS && j + 3 < NUM_COLS) {
+				if (board[i][j] != EMPTY_PIECE && board[i][j] == board[i+1][j+1] && board[i+1][j+1] == board[i+2][j+2] && board[i+2][j+2] == board[i+3][j+3]) {
+						won = true;
+						if (board[i][j] == PLAYER_PIECE) {
 							red_won = true;
 						}
 					}
 				}
-			}
 
 			//forward slash diagonal
-			if (!won_ && i - 3 >= 0 && j + 3 < NUM_COLS) {
-				if (board_entities_[i][j].getVisible() && board_entities_[i-1][j+1].getVisible() && board_entities_[i-2][j+2].getVisible() && board_entities_[i-3][j+3].getVisible()) {
-					if (board_entities_[i][j].getFgTex() == board_entities_[i-1][j+1].getFgTex() && board_entities_[i-1][j+1].getFgTex() == board_entities_[i-2][j+2].getFgTex() && board_entities_[i-2][j+2].getFgTex() == board_entities_[i-3][j+3].getFgTex()) {
-						won_ = true;
-						if (board_entities_[i][j].getFgTex() == red_tex_) {
-							red_won = true;
-						}
+			if (!won && i - 3 >= 0 && j + 3 < NUM_COLS) {
+				if (board[i][j] != EMPTY_PIECE && board[i][j] == board[i-1][j+1] && board[i-1][j+1] == board[i-2][j+2] && board[i-2][j+2] == board[i-3][j+3]) {
+					won = true;
+					if (board[i][j] == PLAYER_PIECE) {
+						red_won = true;
 					}
 				}
 			}
 		}
 	}
-	if (won_ && real) {
+	if (won && real) {
+		won_ = true;
 		win(red_won);
-		return;
+		return true;
 	}
 	if (!empty_space_found && real) {
 		draw();
-		return;
+		return false;
 	}
 	return won_ || !empty_space_found;
 }
@@ -375,13 +369,13 @@ int PlayingState::scorePosition(Board &board, int piece) {
 	return score;
 }
 
-bool PlayingState::isTerminalNode(Board board) {
-
-}
+//bool PlayingState::isTerminalNode(Board board) {
+//
+//}
 
 int PlayingState::minimax(Board board, int depth, int maximising_player) {
-	if (depth == 0 || terminal_node)
-
+	//if (depth == 0 || terminal_node)
+	return 0;
 }
 
 int PlayingState::pickBestMove(int piece) {
