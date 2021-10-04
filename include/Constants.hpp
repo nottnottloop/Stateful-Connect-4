@@ -12,6 +12,7 @@ enum class game_mode {
 constexpr int SCREEN_WIDTH = 1024;
 constexpr int SCREEN_HEIGHT = 768;
 
+constexpr int EMPTY_PIECE = 0;
 constexpr int PLAYER_PIECE = 1;
 constexpr int AI_PIECE = 2;
 

@@ -280,15 +280,30 @@ void PlayingState::checkWinAndDraw() {
 }
 
 int PlayingState::scorePosition(int piece) {
+	int score = 0;
 	//horizontal
 	for (int r = 0; r < NUM_ROWS; r++) {
 		auto row_array = board_[r];
 		for (int c = 0; c < NUM_COLS - 3; c++) {
 			std::array<int, 4> window;
 			std::copy(row_array.begin() + c, row_array.begin() + c + 4, window.begin());
+			int piece_count = 0;
+			int empty_count = 0;
+			for (int i = 0; i < 4; i++) {
+				if (window[i] == piece) {
+					piece_count++;
+				} else if (window[i] == EMPTY_PIECE) {
+					empty_count++;
+				}
+			}
+			if (piece_count == 4) {
+				score += 100;
+			} else if (piece_count == 3 && empty_count == 1) {
+				score += 10;
+			}
 		}
 	}
-	return 0;
+	return score;
 }
 
 void PlayingState::findBestAiMove() {
@@ -524,6 +539,7 @@ void PlayingState::handleInput(Game& game, const SDL_Event& event) {
 						break;
 #endif
 				}
+				break;
 				case SDL_MOUSEMOTION:
 					SDL_GetMouseState(&mouse_x_, &mouse_y_);
 					if (checkValidMouseLocation()) {
