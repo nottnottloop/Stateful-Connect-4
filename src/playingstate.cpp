@@ -214,7 +214,7 @@ void PlayingState::placeToken(int col, Board &board, bool real) {
 
 //this function will check for whether the game is won or drawn
 //it will also update the next column it thinks the AI should move to next
-void PlayingState::checkWinAndDraw() {
+bool PlayingState::checkWinAndDraw(bool real) {
 	bool empty_space_found = false;
 	bool red_won = false;
 	for (int i = 0; i < NUM_ROWS; i++) {
@@ -269,38 +269,75 @@ void PlayingState::checkWinAndDraw() {
 			}
 		}
 	}
-	if (won_) {
+	if (won_ && real) {
 		win(red_won);
 		return;
 	}
-	if (!empty_space_found) {
+	if (!empty_space_found && real) {
 		draw();
 		return;
 	}
+	return won_ || !empty_space_found;
+}
+
+int PlayingState::evaluateWindow(Window window, int piece) {
+	int opp_piece = PLAYER_PIECE;
+	if (piece == PLAYER_PIECE) {
+		opp_piece = AI_PIECE;
+	}
+
+	int score = 0;
+	int piece_count = 0;
+	int empty_count = 0;
+	int opp_piece_count = 0;
+	for (int i = 0; i < 4; i++) {
+		if (window[i] == piece) {
+			piece_count++;
+		} else if (window[i] == opp_piece) {
+			opp_piece_count++;
+		} else if (window[i] == EMPTY_PIECE) {
+			empty_count++;
+		}
+	}
+	if (piece_count == 4) {
+		score += 100;
+	} else if (piece_count == 3 && empty_count == 1) {
+		score += 10;
+	} else if (piece_count == 2 && empty_count == 2) {
+		score += 5;
+	}
+
+	if (opp_piece_count == 3 && empty_count == 1) {
+		score -= 80;
+	}
+	return score;
 }
 
 int PlayingState::scorePosition(Board &board, int piece) {
 	int score = 0;
+
+	//center
+	{
+		std::array<int, 6> col_array;
+		for (int r = 0; r < NUM_ROWS; r++) {
+			col_array[r] = board[r][NUM_COLS / 2];
+		}
+		int center_count = 0;
+		for (int i = 0; i < NUM_ROWS; i++) {
+			if (col_array[i] == piece) {
+				center_count++;
+			}
+		}
+		score += center_count * 6;
+	}
+	 
 	//horizontal
 	for (int r = 0; r < NUM_ROWS; r++) {
 		auto row_array = board[r];
 		for (int c = 0; c < NUM_COLS - 3; c++) {
-			std::array<int, 4> window;
-			std::copy(row_array.begin() + c, row_array.begin() + c + 4, window.begin());
-			int piece_count = 0;
-			int empty_count = 0;
-			for (int i = 0; i < 4; i++) {
-				if (window[i] == piece) {
-					piece_count++;
-				} else if (window[i] == EMPTY_PIECE) {
-					empty_count++;
-				}
-			}
-			if (piece_count == 4) {
-				score += 100;
-			} else if (piece_count == 3 && empty_count == 1) {
-				score += 10;
-			}
+			std::array<int, 4> window_array;
+			std::copy(row_array.begin() + c, row_array.begin() + c + 4, window_array.begin());
+			score += evaluateWindow(window_array, piece);
 		}
 	}
 	//vertical
@@ -310,30 +347,45 @@ int PlayingState::scorePosition(Board &board, int piece) {
 			col_array[r] = board[r][c];
 		}
 		for (int r = 0; r < NUM_ROWS - 3; r++) {
-			std::array<int, 4> window;
-			std::copy(col_array.begin() + r, col_array.begin() + r + 4, window.begin());
-			int piece_count = 0;
-			int empty_count = 0;
+			std::array<int, 4> window_array;
+			std::copy(col_array.begin() + r, col_array.begin() + r + 4, window_array.begin());
+			score += evaluateWindow(window_array, piece);
+		}
+	}
+	//forwardslash diagonal
+	for (int r = 0; r < NUM_ROWS - 3; r++) {
+		for (int c = 0; c < NUM_COLS - 3; c++) {
 			for (int i = 0; i < 4; i++) {
-				if (window[i] == piece) {
-					piece_count++;
-				} else if (window[i] == EMPTY_PIECE) {
-					empty_count++;
-				}
-			}
-			if (piece_count == 4) {
-				score += 100;
-			} else if (piece_count == 3 && empty_count == 1) {
-				score += 10;
+				std::array<int, 4> window_array;
+				window_array[i] = board[r + i][c + i];
+				score += evaluateWindow(window_array, piece);
 			}
 		}
-		
+	}
+	//backslash diagonal
+	for (int r = 0; r < NUM_ROWS - 3; r++) {
+		for (int c = 0; c < NUM_COLS - 3; c++) {
+			for (int i = 0; i < 4; i++) {
+				std::array<int, 4> window_array;
+				window_array[i] = board[r + 3 - i][c + i];
+				score += evaluateWindow(window_array, piece);
+			}
+		}
 	}
 	return score;
 }
 
+bool PlayingState::isTerminalNode(Board board) {
+
+}
+
+int PlayingState::minimax(Board board, int depth, int maximising_player) {
+	if (depth == 0 || terminal_node)
+
+}
+
 int PlayingState::pickBestMove(int piece) {
-	int best_score = 0;
+	int best_score = -10000;
 	int best_column = rd_() % 7;
 	for (int c = 0; c < NUM_COLS; c++) {
 		if (!isValidColumn(c)) {
@@ -348,68 +400,6 @@ int PlayingState::pickBestMove(int piece) {
 		}
 	}
 	return best_column;
-}
-
-void PlayingState::findBestAiMove() {
-	if (game_mode_ == game_mode::ONE_PLAYER && !goofy_ai_) {
-		ScoreMove random = {0, rd_() % NUM_COLS};
-		while (!isValidColumn(random.move)) {
-			random.move = rd_() % NUM_COLS;
-		}
-		//horizontal
-		ScoreMove best_horizontal = {0, 0};
-		for (int r = 0; r < NUM_ROWS; r++) {
-			for (int c = 0; c < NUM_COLS - 1; c++) {
-				if (isValidColumn(c)) {
-					auto temp_board = board_;
-					placeToken(c, temp_board, false);
-					for (int check = 0; check < NUM_COLS - 4; check++) {
-						int horizontal_score = 0;
-						for (int add = 0; add < 4; add++) {
-							if (temp_board[r][check+add] == AI_PIECE) {
-								horizontal_score++;
-								if (horizontal_score > best_horizontal.score) {
-									best_horizontal.score = horizontal_score;
-									best_horizontal.move = c;
-									}
-							} else {
-								break;
-							}
-						}
-					}
-				}
-			}
-		}
-		//vertical
-		ScoreMove best_vertical = {0, 0};
-		for (int r = 0; r < NUM_ROWS; r++) {
-			for (int c = 0; c < NUM_COLS - 4; c++) {
-			}
-		}
-		//backslash
-		ScoreMove best_backslash = {0, 0};
-		for (int r = 0; r < NUM_ROWS; r++) {
-			for (int c = 0; c < NUM_COLS - 4; c++) {
-			}
-		}
-		//forwardslash
-		ScoreMove best_forwardslash = {0, 0};
-		for (int r = 0; r < NUM_ROWS; r++) {
-			for (int c = 0; c < NUM_COLS - 4; c++) {
-			}
-		}
-
-		ScoreMove arr[] = {random, best_horizontal, best_vertical, best_backslash, best_forwardslash};
-
-		printf("Random: %d %d\n", arr[0].score, arr[0].move);
-		printf("Horizontal: %d %d\n", arr[1].score, arr[1].move);
-		printf("Vertical: %d %d\n", arr[2].score, arr[2].move);
-		printf("Backslash: %d %d\n", arr[3].score, arr[3].move);
-		printf("Forwardslash: %d %d\n", arr[4].score, arr[4].move);
-		printf("Total scores: %d %d %d %d %d\n", arr[0].score, arr[1].score, arr[2].score, arr[3].score, arr[4].score);
-		std::sort(arr, arr + 3, [](ScoreMove a, ScoreMove b) { return a.score > b.score;});
-		next_ai_move_ = arr[0].move;
-	}
 }
 
 void PlayingState::win(bool red_won) {

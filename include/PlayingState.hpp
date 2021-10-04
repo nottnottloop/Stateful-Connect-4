@@ -15,6 +15,7 @@ public:
 		int score, move;
 	};
 	using Board = std::array<std::array<int, NUM_COLS>, NUM_ROWS>;
+	using Window = std::array<int, 4>;
 	PlayingState();
 	void handleInput(Game &game, const SDL_Event &event);
 	void update(Game &game);
@@ -30,10 +31,12 @@ public:
 	void aiMove();
 	bool isValidColumn(int col);
 	void placeToken(int col, Board &board, bool real);
-	void checkWinAndDraw();
+	void checkWinAndDraw(bool real=true);
+	int evaluateWindow(Window window, int piece);
 	int scorePosition(Board &board, int piece);
+	bool isTerminalNode();
+	int minimax(Board board, int depth, int maximising_player);
 	int pickBestMove(int piece);
-	void findBestAiMove();
 	void win(bool red_won);
 	void draw();
 	void resetGame();
