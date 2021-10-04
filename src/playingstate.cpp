@@ -2,6 +2,7 @@
 #include <SDL.h>
 #include <random>
 #include <algorithm>
+#include <limits>
 #include "PlayingState.hpp"
 #include "Text.hpp"
 #include "RenderWindow.hpp"
@@ -156,8 +157,10 @@ void PlayingState::aiMove() {
 		printf("Goofy AI: %d\n", col);
 		placeToken(col, board_, true);
 	} else {
-		int col;
-		col = pickBestMove(AI_PIECE);
+		//int col;
+		//int minimax_score;
+		//col = pickBestMove(AI_PIECE);
+		auto [col, minimax_score] = minimax(board_, 2, true);
 		placeToken(col, board_, true);
 		printf("AI moves: %d\n\n", col);
 	}
@@ -173,8 +176,16 @@ bool PlayingState::isValidColumn(int col) {
 	return valid;
 }
 
+int PlayingState::getNextOpenRow(Board board, int col) {
+	for (int r = 0; r < NUM_ROWS; r++) {
+		if (board[r][col] == 0) {
+			return r;
+		}
+	}
+}
+
 //fake boards are tested when real is set to false for the purpose of ai
-void PlayingState::placeToken(int col, Board &board, bool real) {
+void PlayingState::placeToken(int col, Board &board, bool real, int piece) {
 	if (won_ || drawn_) {
 		return;
 	}
@@ -193,7 +204,7 @@ void PlayingState::placeToken(int col, Board &board, bool real) {
 	if (!row_set) {
 		row	= NUM_ROWS - 1;
 	}
-	if (player2_to_move_) {
+	if (player2_to_move_ || piece == AI_PIECE) {
 		board[row][col] = 2;
 		if (real) {
 			board_entities_[row][col].setFgTex(blue_tex_);
@@ -207,14 +218,18 @@ void PlayingState::placeToken(int col, Board &board, bool real) {
 	if (real) {
 		board_entities_[row][col].setVisible();
 		player_to_move_changed_ = true;
+		if (player2_to_move_) {
+			checkWinAndDraw(board_, AI_PIECE, true);
+		} else {
+			checkWinAndDraw(board_, PLAYER_PIECE, true);
+		}
 		nextPlayerToMove();
-		checkWinAndDraw(board_, true);
 	}
 }
 
 //this function will check for whether the game is won or drawn
 //it will also update the next column it thinks the AI should move to next
-bool PlayingState::checkWinAndDraw(Board board, bool real) {
+bool PlayingState::checkWinAndDraw(Board board, int piece, bool real) {
 	bool empty_space_found = false;
 	bool won = false;
 	bool red_won = false;
@@ -225,7 +240,7 @@ bool PlayingState::checkWinAndDraw(Board board, bool real) {
 			}
 			//horizontal
 			if (!won && j + 3 < NUM_COLS) {
-				if (board[i][j] != EMPTY_PIECE && board[i][j] == board[i][j+1] && board[i][j+1] == board[i][j+2] && board[i][j+2] == board[i][j+3]) {
+				if (board[i][j] == piece && board[i][j] == board[i][j+1] && board[i][j+1] == board[i][j+2] && board[i][j+2] == board[i][j+3]) {
 					won = true;
 					if (board[i][j] == PLAYER_PIECE) {
 						red_won = true;
@@ -234,7 +249,7 @@ bool PlayingState::checkWinAndDraw(Board board, bool real) {
 			}
 			//vertical
 			if (!won && i + 3 < NUM_ROWS) {
-				if (board[i][j] != EMPTY_PIECE && board[i][j] == board[i+1][j] && board[i+1][j] == board[i+2][j] && board[i+2][j] == board[i+3][j]) {
+				if (board[i][j] == piece && board[i][j] == board[i+1][j] && board[i+1][j] == board[i+2][j] && board[i+2][j] == board[i+3][j]) {
 					won = true;
 					if (board[i][j] == PLAYER_PIECE) {
 						red_won = true;
@@ -243,7 +258,7 @@ bool PlayingState::checkWinAndDraw(Board board, bool real) {
 			}
 			//backslash slash diagonal
 			if (!won && i + 3 < NUM_ROWS && j + 3 < NUM_COLS) {
-				if (board[i][j] != EMPTY_PIECE && board[i][j] == board[i+1][j+1] && board[i+1][j+1] == board[i+2][j+2] && board[i+2][j+2] == board[i+3][j+3]) {
+				if (board[i][j] == piece && board[i][j] == board[i+1][j+1] && board[i+1][j+1] == board[i+2][j+2] && board[i+2][j+2] == board[i+3][j+3]) {
 						won = true;
 						if (board[i][j] == PLAYER_PIECE) {
 							red_won = true;
@@ -253,7 +268,7 @@ bool PlayingState::checkWinAndDraw(Board board, bool real) {
 
 			//forward slash diagonal
 			if (!won && i - 3 >= 0 && j + 3 < NUM_COLS) {
-				if (board[i][j] != EMPTY_PIECE && board[i][j] == board[i-1][j+1] && board[i-1][j+1] == board[i-2][j+2] && board[i-2][j+2] == board[i-3][j+3]) {
+				if (board[i][j] == piece && board[i][j] == board[i-1][j+1] && board[i-1][j+1] == board[i-2][j+2] && board[i-2][j+2] == board[i-3][j+3]) {
 					won = true;
 					if (board[i][j] == PLAYER_PIECE) {
 						red_won = true;
@@ -271,7 +286,7 @@ bool PlayingState::checkWinAndDraw(Board board, bool real) {
 		draw();
 		return false;
 	}
-	return won_ || !empty_space_found;
+	return won || !empty_space_found;
 }
 
 int PlayingState::evaluateWindow(Window window, int piece) {
@@ -369,13 +384,58 @@ int PlayingState::scorePosition(Board &board, int piece) {
 	return score;
 }
 
-//bool PlayingState::isTerminalNode(Board board) {
-//
-//}
+bool PlayingState::isTerminalNode(Board board) {
+	return checkWinAndDraw(board, PLAYER_PIECE, false) || checkWinAndDraw(board, AI_PIECE, false);
+}
 
-int PlayingState::minimax(Board board, int depth, int maximising_player) {
-	//if (depth == 0 || terminal_node)
-	return 0;
+std::array<int, 2> PlayingState::minimax(Board board, int depth, bool maximising_player) {
+	bool is_terminal = isTerminalNode(board);
+	if (depth == 0 || is_terminal) {
+		if (is_terminal) {
+			if (checkWinAndDraw(board, AI_PIECE, false)) {
+				return {-1, 1000000000};
+			} else if (checkWinAndDraw(board, PLAYER_PIECE, false)) {
+				return {-1, -1000000000};
+			} else {
+				return {-1, 0};
+			}
+		} else {
+			return { -1, scorePosition(board, AI_PIECE) };
+		}
+	}
+	if (maximising_player) {
+		int value = -std::numeric_limits<int>::max();
+		int column = 0;
+		for (int c = 0; c < NUM_COLS; c++) {
+			if (!isValidColumn(c)) {
+				continue;
+			}
+			Board temp_board = board;
+			placeToken(c, temp_board, false, AI_PIECE);
+			auto [throwaway, new_score] =  minimax(temp_board, depth - 1, false);
+			if (new_score > value) {
+				value = new_score;
+				column = c;
+			}
+		}
+		return {column, value};
+	} else {
+		int value = std::numeric_limits<int>::max();
+		int column = 0;
+		for (int c = 0; c < NUM_COLS; c++) {
+			if (!isValidColumn(c)) {
+				continue;
+			}
+			Board temp_board = board;
+			placeToken(c, temp_board, false, PLAYER_PIECE);
+			auto [throwaway, new_score] = minimax(temp_board, depth - 1, true);
+			if (new_score < value) {
+				value = new_score;
+				column = c;
+			}
+		}
+		return {column, value};
+	}
 }
 
 int PlayingState::pickBestMove(int piece) {

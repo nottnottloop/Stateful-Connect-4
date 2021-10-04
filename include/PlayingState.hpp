@@ -30,12 +30,13 @@ public:
 	void tryToPlaceToken(int col);
 	void aiMove();
 	bool isValidColumn(int col);
-	void placeToken(int col, Board &board, bool real);
-	bool checkWinAndDraw(Board board, bool real=true);
+	int getNextOpenRow(Board board, int col);
+	void placeToken(int col, Board &board, bool real, int piece = 0);
+	bool checkWinAndDraw(Board board, int piece, bool real=true);
 	int evaluateWindow(Window window, int piece);
 	int scorePosition(Board &board, int piece);
-	//bool isTerminalNode(Board board);
-	int minimax(Board board, int depth, int maximising_player);
+	bool isTerminalNode(Board board);
+	std::array<int, 2> minimax(Board board, int depth, bool maximising_player);
 	int pickBestMove(int piece);
 	void win(bool red_won);
 	void draw();
