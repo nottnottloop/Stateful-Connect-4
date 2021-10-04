@@ -303,6 +303,32 @@ int PlayingState::scorePosition(Board &board, int piece) {
 			}
 		}
 	}
+	//vertical
+	for (int c = 0; c < NUM_COLS; c++) {
+		std::array<int, 6> col_array;
+		for (int r = 0; r < NUM_ROWS; r++) {
+			col_array[r] = board[r][c];
+		}
+		for (int r = 0; r < NUM_ROWS - 3; r++) {
+			std::array<int, 4> window;
+			std::copy(col_array.begin() + r, col_array.begin() + r + 4, window.begin());
+			int piece_count = 0;
+			int empty_count = 0;
+			for (int i = 0; i < 4; i++) {
+				if (window[i] == piece) {
+					piece_count++;
+				} else if (window[i] == EMPTY_PIECE) {
+					empty_count++;
+				}
+			}
+			if (piece_count == 4) {
+				score += 100;
+			} else if (piece_count == 3 && empty_count == 1) {
+				score += 10;
+			}
+		}
+		
+	}
 	return score;
 }
 
