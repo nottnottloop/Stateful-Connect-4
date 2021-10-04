@@ -156,10 +156,10 @@ void PlayingState::aiMove() {
 		printf("Goofy AI: %d\n", col);
 		placeToken(col, board_, true);
 	} else {
-		findBestAiMove();
-		placeToken(next_ai_move_, board_, true);
-		player_to_move_changed_ = true;
-		printf("AI moves: %d\n\n", next_ai_move_);
+		int col;
+		col = pickBestMove(AI_PIECE);
+		placeToken(col, board_, true);
+		printf("AI moves: %d\n\n", col);
 	}
 }
 
@@ -174,7 +174,7 @@ bool PlayingState::isValidColumn(int col) {
 }
 
 //fake boards are tested when real is set to false for the purpose of ai
-void PlayingState::placeToken(int col, std::array<std::array<int, NUM_COLS>, NUM_ROWS> &board, bool real) {
+void PlayingState::placeToken(int col, Board &board, bool real) {
 	if (won_ || drawn_) {
 		return;
 	}
@@ -279,11 +279,11 @@ void PlayingState::checkWinAndDraw() {
 	}
 }
 
-int PlayingState::scorePosition(int piece) {
+int PlayingState::scorePosition(Board &board, int piece) {
 	int score = 0;
 	//horizontal
 	for (int r = 0; r < NUM_ROWS; r++) {
-		auto row_array = board_[r];
+		auto row_array = board[r];
 		for (int c = 0; c < NUM_COLS - 3; c++) {
 			std::array<int, 4> window;
 			std::copy(row_array.begin() + c, row_array.begin() + c + 4, window.begin());
@@ -304,6 +304,24 @@ int PlayingState::scorePosition(int piece) {
 		}
 	}
 	return score;
+}
+
+int PlayingState::pickBestMove(int piece) {
+	int best_score = 0;
+	int best_column = rd_() % 7;
+	for (int c = 0; c < NUM_COLS; c++) {
+		if (!isValidColumn(c)) {
+			continue;
+		}
+		auto temp_board = board_;
+		placeToken(c, temp_board, false);
+		int score = scorePosition(temp_board, piece);
+		if (score > best_score) {
+			best_score = score;
+			best_column = c;
+		}
+	}
+	return best_column;
 }
 
 void PlayingState::findBestAiMove() {

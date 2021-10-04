@@ -14,6 +14,7 @@ public:
 	struct ScoreMove {
 		int score, move;
 	};
+	using Board = std::array<std::array<int, NUM_COLS>, NUM_ROWS>;
 	PlayingState();
 	void handleInput(Game &game, const SDL_Event &event);
 	void update(Game &game);
@@ -28,9 +29,10 @@ public:
 	void tryToPlaceToken(int col);
 	void aiMove();
 	bool isValidColumn(int col);
-	void placeToken(int col, std::array<std::array<int, NUM_COLS>, NUM_ROWS> &board, bool real);
+	void placeToken(int col, Board &board, bool real);
 	void checkWinAndDraw();
-	int scorePosition(int piece);
+	int scorePosition(Board &board, int piece);
+	int pickBestMove(int piece);
 	void findBestAiMove();
 	void win(bool red_won);
 	void draw();
@@ -66,7 +68,7 @@ private:
 	SDL_Texture *blue_tex_;
 	SDL_Texture *red_arrow_;
 	SDL_Texture *blue_arrow_;
-	std::array<std::array<int, NUM_COLS>, NUM_ROWS> board_;
+	Board board_;
 	std::vector<std::vector<Entity>> board_entities_;
 	std::vector<Entity> display_arrows_;
 	BasicButton restart_button_;
