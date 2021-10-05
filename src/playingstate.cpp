@@ -248,27 +248,27 @@ int PlayingState::checkWinAndDraw(Board board, int piece, bool real) {
 			}
 			//horizontal
 			if (!won && j + 3 < NUM_COLS) {
-				if (board[i][j] == piece && board[i][j] == board[i][j+1] && board[i][j+1] == board[i][j+2] && board[i][j+2] == board[i][j+3]) {
+				if (board[i][j] == piece && board[i][j+1] == piece && board[i][j+2] == piece && board[i][j+3] == piece) {
 					won = true;
-					if (board[i][j] == PLAYER_PIECE) {
+					if (piece == PLAYER_PIECE) {
 						red_won = true;
 					}
 				}
 			}
 			//vertical
 			if (!won && i + 3 < NUM_ROWS) {
-				if (board[i][j] == piece && board[i][j] == board[i+1][j] && board[i+1][j] == board[i+2][j] && board[i+2][j] == board[i+3][j]) {
+				if (board[i][j] == piece && board[i+1][j] == piece && board[i+2][j] == piece && board[i+3][j] == piece) {
 					won = true;
-					if (board[i][j] == PLAYER_PIECE) {
+					if (piece == PLAYER_PIECE) {
 						red_won = true;
 					}
 				}
 			}
 			//backslash slash diagonal
 			if (!won && i + 3 < NUM_ROWS && j + 3 < NUM_COLS) {
-				if (board[i][j] == piece && board[i][j] == board[i+1][j+1] && board[i+1][j+1] == board[i+2][j+2] && board[i+2][j+2] == board[i+3][j+3]) {
+				if (board[i][j] == piece && board[i+1][j+1] == piece && board[i+2][j+2] == piece && board[i+3][j+3] == piece) {
 						won = true;
-						if (board[i][j] == PLAYER_PIECE) {
+						if (piece == PLAYER_PIECE) {
 							red_won = true;
 						}
 					}
@@ -276,9 +276,9 @@ int PlayingState::checkWinAndDraw(Board board, int piece, bool real) {
 
 			//forward slash diagonal
 			if (!won && i - 3 >= 0 && j + 3 < NUM_COLS) {
-				if (board[i][j] == piece && board[i][j] == board[i-1][j+1] && board[i-1][j+1] == board[i-2][j+2] && board[i-2][j+2] == board[i-3][j+3]) {
+				if (board[i][j] == piece && board[i-1][j+1] == piece && board[i-2][j+2] == piece && board[i-3][j+3] == piece) {
 					won = true;
-					if (board[i][j] == PLAYER_PIECE) {
+					if (piece == PLAYER_PIECE) {
 						red_won = true;
 					}
 				}
