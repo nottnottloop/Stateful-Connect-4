@@ -184,6 +184,16 @@ int PlayingState::randomValidColumn() {
 	return column;
 }
 
+std::vector<int> PlayingState::getValidLocations() {
+	std::vector<int> valid_locations;
+	for (int c = 0; c < NUM_COLS; c++) {
+		if (isValidColumn(c)) {
+			valid_locations.push_back(c);
+		}
+	}
+	return valid_locations;
+}
+
 int PlayingState::getNextOpenRow(Board board, int col) {
 	for (int r = 0; r < NUM_ROWS; r++) {
 		if (board[r][col] == 0) {
@@ -237,7 +247,7 @@ void PlayingState::placeToken(int col, Board &board, bool real, int piece) {
 
 //this function will check for whether the game is won or drawn
 //it will also update the next column it thinks the AI should move to next
-int PlayingState::checkWinAndDraw(Board board, int piece, bool real) {
+bool PlayingState::checkWinAndDraw(Board board, int piece, bool real) {
 	bool empty_space_found = false;
 	bool won = false;
 	bool red_won = false;
@@ -294,13 +304,7 @@ int PlayingState::checkWinAndDraw(Board board, int piece, bool real) {
 		draw();
 		return false;
 	}
-	if (red_won) {
-		return PLAYER_PIECE;
-	} else if (won) {
-		return AI_PIECE;
-	} else {
-		return 0;
-	}
+	return won;
 }
 
 int PlayingState::evaluateWindow(Window window, int piece) {
@@ -331,10 +335,11 @@ int PlayingState::evaluateWindow(Window window, int piece) {
 	}
 
 	if (opp_piece_count == 3 && empty_count == 1) {
-		score -= 100;
-	} else if (opp_piece_count == 2 && empty_count == 2) {
-		score -= 2;
+		score -= 4;
 	}
+	//} else if (opp_piece_count == 2 && empty_count == 2) {
+		//score -= 4;
+	//}
 	return score;
 }
 
@@ -401,16 +406,17 @@ int PlayingState::scorePosition(Board &board, int piece) {
 }
 
 bool PlayingState::isTerminalNode(Board board) {
-	return (checkWinAndDraw(board, PLAYER_PIECE, false) == PLAYER_PIECE) || (checkWinAndDraw(board, AI_PIECE, false) == AI_PIECE);
+	return (checkWinAndDraw(board, PLAYER_PIECE, false)) || (checkWinAndDraw(board, AI_PIECE, false));
 }
 
 std::array<int, 2> PlayingState::minimax(Board board, int depth, bool maximising_player) {
+	std::vector<int> valid_locations = getValidLocations();
 	bool is_terminal = isTerminalNode(board);
 	if (depth == 0 || is_terminal) {
 		if (is_terminal) {
-			if (checkWinAndDraw(board, AI_PIECE, false) == AI_PIECE) {
+			if (checkWinAndDraw(board, AI_PIECE, false)) {
 				return {-1, INT_MAX};
-			} else if (checkWinAndDraw(board, PLAYER_PIECE, false) == PLAYER_PIECE) {
+			} else if (checkWinAndDraw(board, PLAYER_PIECE, false)) {
 				return {-1, INT_MIN};
 			} else {
 				return {-1, 0};
@@ -423,16 +429,13 @@ std::array<int, 2> PlayingState::minimax(Board board, int depth, bool maximising
 		int value = INT_MIN;
 		//int value = -std::numeric_limits<int>::max();
 		int column = randomValidColumn();
-		for (int c = 0; c < NUM_COLS; c++) {
-			if (!isValidColumn(c)) {
-				continue;
-			}
+		for (int i = 0; i < valid_locations.size(); i++) {
 			Board temp_board = board;
-			placeToken(c, temp_board, false, AI_PIECE);
+			placeToken(valid_locations[i], temp_board, false, AI_PIECE);
 			auto [throwaway, new_score] =  minimax(temp_board, depth - 1, false);
 			if (new_score > value) {
 				value = new_score;
-				column = c;
+				column = valid_locations[i];
 			}
 		}
 		return {column, value};
@@ -440,16 +443,13 @@ std::array<int, 2> PlayingState::minimax(Board board, int depth, bool maximising
 		int value = INT_MAX;
 		//int value = std::numeric_limits<int>::max();
 		int column = randomValidColumn();
-		for (int c = 0; c < NUM_COLS; c++) {
-			if (!isValidColumn(c)) {
-				continue;
-			}
+		for (int i = 0; i < valid_locations.size(); i++) {
 			Board temp_board = board;
-			placeToken(c, temp_board, false, PLAYER_PIECE);
+			placeToken(valid_locations[i], temp_board, false, PLAYER_PIECE);
 			auto [throwaway, new_score] = minimax(temp_board, depth - 1, true);
 			if (new_score < value) {
 				value = new_score;
-				column = c;
+				column = valid_locations[i];
 			}
 		}
 		return {column, value};
@@ -457,8 +457,8 @@ std::array<int, 2> PlayingState::minimax(Board board, int depth, bool maximising
 }
 
 int PlayingState::pickBestMove(int piece) {
-	int best_score = -100000000;
-	int best_column = rd_() % 7;
+	int best_score = INT_MIN;
+	int best_column = randomValidColumn();
 	for (int c = 0; c < NUM_COLS; c++) {
 		if (!isValidColumn(c)) {
 			continue;
