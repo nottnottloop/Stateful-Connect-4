@@ -176,6 +176,14 @@ bool PlayingState::isValidColumn(int col) {
 	return valid;
 }
 
+int PlayingState::randomValidColumn() {
+	int column = rd_() % NUM_COLS;
+	while (!isValidColumn(column)) {
+		column = rd_() % NUM_COLS;
+	}
+	return column;
+}
+
 int PlayingState::getNextOpenRow(Board board, int col) {
 	for (int r = 0; r < NUM_ROWS; r++) {
 		if (board[r][col] == 0) {
@@ -229,7 +237,7 @@ void PlayingState::placeToken(int col, Board &board, bool real, int piece) {
 
 //this function will check for whether the game is won or drawn
 //it will also update the next column it thinks the AI should move to next
-bool PlayingState::checkWinAndDraw(Board board, int piece, bool real) {
+int PlayingState::checkWinAndDraw(Board board, int piece, bool real) {
 	bool empty_space_found = false;
 	bool won = false;
 	bool red_won = false;
@@ -286,7 +294,13 @@ bool PlayingState::checkWinAndDraw(Board board, int piece, bool real) {
 		draw();
 		return false;
 	}
-	return won || !empty_space_found;
+	if (red_won) {
+		return PLAYER_PIECE;
+	} else if (won) {
+		return AI_PIECE;
+	} else {
+		return 0;
+	}
 }
 
 int PlayingState::evaluateWindow(Window window, int piece) {
@@ -309,15 +323,17 @@ int PlayingState::evaluateWindow(Window window, int piece) {
 		}
 	}
 	if (piece_count == 4) {
-		score += 100;
+		score += 1000;
 	} else if (piece_count == 3 && empty_count == 1) {
-		score += 10;
-	} else if (piece_count == 2 && empty_count == 2) {
 		score += 5;
+	} else if (piece_count == 2 && empty_count == 2) {
+		score += 2;
 	}
 
 	if (opp_piece_count == 3 && empty_count == 1) {
-		score -= 80;
+		score -= 100;
+	} else if (opp_piece_count == 2 && empty_count == 2) {
+		score -= 2;
 	}
 	return score;
 }
@@ -337,7 +353,7 @@ int PlayingState::scorePosition(Board &board, int piece) {
 				center_count++;
 			}
 		}
-		score += center_count * 6;
+		score += center_count * 3;
 	}
 	 
 	//horizontal
@@ -385,27 +401,28 @@ int PlayingState::scorePosition(Board &board, int piece) {
 }
 
 bool PlayingState::isTerminalNode(Board board) {
-	return checkWinAndDraw(board, PLAYER_PIECE, false) || checkWinAndDraw(board, AI_PIECE, false);
+	return (checkWinAndDraw(board, PLAYER_PIECE, false) == PLAYER_PIECE) || (checkWinAndDraw(board, AI_PIECE, false) == AI_PIECE);
 }
 
 std::array<int, 2> PlayingState::minimax(Board board, int depth, bool maximising_player) {
 	bool is_terminal = isTerminalNode(board);
 	if (depth == 0 || is_terminal) {
 		if (is_terminal) {
-			if (checkWinAndDraw(board, AI_PIECE, false)) {
-				return {-1, 1000000000};
-			} else if (checkWinAndDraw(board, PLAYER_PIECE, false)) {
-				return {-1, -1000000000};
+			if (checkWinAndDraw(board, AI_PIECE, false) == AI_PIECE) {
+				return {-1, INT_MAX};
+			} else if (checkWinAndDraw(board, PLAYER_PIECE, false) == PLAYER_PIECE) {
+				return {-1, INT_MIN};
 			} else {
 				return {-1, 0};
 			}
 		} else {
-			return { -1, scorePosition(board, AI_PIECE) };
+			return {-1, scorePosition(board, AI_PIECE)};
 		}
 	}
 	if (maximising_player) {
-		int value = -std::numeric_limits<int>::max();
-		int column = 0;
+		int value = INT_MIN;
+		//int value = -std::numeric_limits<int>::max();
+		int column = randomValidColumn();
 		for (int c = 0; c < NUM_COLS; c++) {
 			if (!isValidColumn(c)) {
 				continue;
@@ -420,8 +437,9 @@ std::array<int, 2> PlayingState::minimax(Board board, int depth, bool maximising
 		}
 		return {column, value};
 	} else {
-		int value = std::numeric_limits<int>::max();
-		int column = 0;
+		int value = INT_MAX;
+		//int value = std::numeric_limits<int>::max();
+		int column = randomValidColumn();
 		for (int c = 0; c < NUM_COLS; c++) {
 			if (!isValidColumn(c)) {
 				continue;
@@ -439,7 +457,7 @@ std::array<int, 2> PlayingState::minimax(Board board, int depth, bool maximising
 }
 
 int PlayingState::pickBestMove(int piece) {
-	int best_score = -10000;
+	int best_score = -100000000;
 	int best_column = rd_() % 7;
 	for (int c = 0; c < NUM_COLS; c++) {
 		if (!isValidColumn(c)) {

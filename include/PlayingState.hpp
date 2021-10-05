@@ -30,9 +30,10 @@ public:
 	void tryToPlaceToken(int col);
 	void aiMove();
 	bool isValidColumn(int col);
+	int randomValidColumn();
 	int getNextOpenRow(Board board, int col);
 	void placeToken(int col, Board &board, bool real, int piece = 0);
-	bool checkWinAndDraw(Board board, int piece, bool real=true);
+	int checkWinAndDraw(Board board, int piece, bool real=true);
 	int evaluateWindow(Window window, int piece);
 	int scorePosition(Board &board, int piece);
 	bool isTerminalNode(Board board);
