@@ -646,39 +646,29 @@ void PlayingState::handleInput(Game& game, const SDL_Event& event) {
 						cycleColor(true);
 						break;
 #ifdef DEBUG_CONTROLS
-					case SDLK_h:
-						for (int col = 0; col < NUM_COLS; col++){
-							printf("%d", isValidColumn(col));
-						}
-						printf("\n");
-						break;
-					case SDLK_j:
-						printf("---\n");
-						for (int row = 0; row < NUM_ROWS; row++) {
-							for (int col = 0; col < NUM_COLS; col++) {
-								printf("%d ", board_[row][col]);
-							}
-							printf("\n");
-						}
-						printf("---\n");
-						break;
 					case SDLK_SPACE:
 						nextPlayerToMove(true);
 						break;
 					case SDLK_MINUS:
 						resetGame();
 						break;
-					case SDLK_9:
+					case SDLK_0:
 						game.introState();
 						break;
 					case SDLK_a:
 						player_color_lock_ = !player_color_lock_;
 						break;
-					case SDLK_l:
-						nearlyFillBoard();
+					case SDLK_w:
+						win(true);
+						won_ = true;
+						break;
+					case SDLK_f:
+						win(false);
+						won_ = true;
 						break;
 					case SDLK_d:
 						draw();
+						drawn_ = true;
 						break;
 #endif
 				}

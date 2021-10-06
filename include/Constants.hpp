@@ -18,7 +18,7 @@ constexpr int PLAYER_PIECE = 1;
 //i'm not going to search and replace the term out though, i'm used to it
 constexpr int AI_PIECE = 2;
 
-constexpr int SEARCH_DEPTH = 2;
+constexpr int SEARCH_DEPTH = 5;
 
 //constexpr bool DEBUG_PRINT = true;
 constexpr bool DEBUG_PRINT = false;
