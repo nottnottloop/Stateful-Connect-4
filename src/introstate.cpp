@@ -71,9 +71,9 @@ void IntroState::handleInput(Game &game, const SDL_Event &event) {
 					if (two_player_button_.clicked(mouse_x_, mouse_y_)) {
 						game.playingState(game_mode::TWO_PLAYER, false);
 					}
-					if (internet_play_button_.clicked(mouse_x_, mouse_y_)) {
-						game.playingState(game_mode::ONLINE, false);
-					}
+					//if (internet_play_button_.clicked(mouse_x_, mouse_y_)) {
+					//	game.playingState(game_mode::ONLINE, false);
+					//}
 				}
 				mouse_down_ = false;
 				break;
@@ -89,8 +89,8 @@ void IntroState::update(Game &game) {
 	window.render(two_player_button_);
 	window.render(can_beat_button_);
 	window.render(cant_beat_button_);
-	window.render(internet_play_text_, true);
-	window.render(internet_play_button_);
+	//window.render(internet_play_text_, true);
+	//window.render(internet_play_button_);
 	window.display();
 	window.showWindow();
 }

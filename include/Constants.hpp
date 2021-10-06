@@ -1,7 +1,7 @@
 #pragma once
 #include <SDL.h>
 
-#define DEBUG_CONTROLS 1
+//#define DEBUG_CONTROLS 1
 
 enum class game_mode {
 	ONE_PLAYER,

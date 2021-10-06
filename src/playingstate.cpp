@@ -527,9 +527,13 @@ void PlayingState::win(bool red_won) {
 		}
 	} else {
 		if (red_won) {
-			if ((rd_() % 3) == 0 && !goofy_ai_) {
+			int random = rd_() % 4;
+			if (random == 0 && !goofy_ai_) {
 				win_text_.openFont("res/fixedsys.ttf", 30);
 				win_text_.loadFontTexture(RED, "Hold down SHIFT when clicking \"Can beat\" for GOOFY ai!");
+			} else if (random == 1) {
+				win_text_.openFont("res/fixedsys.ttf", 50);
+				win_text_.loadFontTexture(RED, "Cycle colors by pressing C!");
 			} else {
 				win_text_.openFont("res/fixedsys.ttf", 50);
 				win_text_.loadFontTexture(RED, "Player wins!");

@@ -3,3 +3,5 @@ build
 .vscode
 /*.dll
 CMakeSettings.json
+Stateful Connect 4.exe
+zips
