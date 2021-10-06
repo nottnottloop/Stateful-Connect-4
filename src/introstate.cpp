@@ -55,13 +55,15 @@ void IntroState::handleInput(Game &game, const SDL_Event &event) {
 						const Uint8 *state = SDL_GetKeyboardState(nullptr);
 						bool goofy_ai = false;
 						bool turbo_ai = false;
+						SDL_Color color = HONEYDEW;
 						if (state[SDL_SCANCODE_RSHIFT] || state[SDL_SCANCODE_LSHIFT]) {
 							goofy_ai = true;
+							color = LIGHT_PURPLE;
 						}
 						if (state[SDL_SCANCODE_RCTRL] || state[SDL_SCANCODE_LCTRL]) {
 							turbo_ai = true;
 						}
-						game.playingState(game_mode::ONE_PLAYER, false, goofy_ai, turbo_ai);
+						game.playingState(game_mode::ONE_PLAYER, false, goofy_ai, turbo_ai, color);
 					}
 					if (cant_beat_button_.clicked(mouse_x_, mouse_y_)) {
 						game.playingState(game_mode::ONE_PLAYER, true, false, false, GAINSBORO);
