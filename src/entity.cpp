@@ -125,7 +125,7 @@ std::tuple<SDL_Rect, SDL_Rect> Entity::renderFgRectInfo() {
 	SDL_Rect dst;
 	dst.x = getPos().x;
 	dst.y = getPos().y;
-	dst.w = getBgFrame().w * getScale();
-	dst.h = getBgFrame().h * getScale();
+	dst.w = getFgFrame().w * getScale();
+	dst.h = getFgFrame().h * getScale();
 	return {src, dst};
 }

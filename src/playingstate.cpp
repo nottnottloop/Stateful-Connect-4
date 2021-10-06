@@ -13,15 +13,19 @@
 
 extern RenderWindow window;
 
+
+SDL_Texture *gofy = window.loadTexture("res/gofy.png");
+
 PlayingState::PlayingState()
-:GameState("PlayingState"),
-player_to_move_text_({768, 715}, {0, 0}),
-won_(false), drawn_(false),
-win_text_({SCREEN_WIDTH / 2, 250}, {0, 0}),
-draw_text_({SCREEN_WIDTH / 2, 250}, {0, 0}),
-restart_button_(BasicButton({SCREEN_WIDTH / 2 + 50, SCREEN_HEIGHT / 2, 200, 100}, {0, 0}, BLACK, WHITE, GREEN, 5, "Play Again")),
-back_to_intro_button_(BasicButton({SCREEN_WIDTH / 2 - 250, SCREEN_HEIGHT / 2, 200, 100}, {0, 0}, BLACK, GAINSBORO, RED, 5, "Quit")),
-player_to_move_changed_(true)
+	:GameState("PlayingState"),
+	player_to_move_text_({768, 715}, {0, 0}),
+	won_(false), drawn_(false),
+	win_text_({SCREEN_WIDTH / 2, 250}, {0, 0}),
+	draw_text_({SCREEN_WIDTH / 2, 250}, {0, 0}),
+	restart_button_(BasicButton({SCREEN_WIDTH / 2 + 50, SCREEN_HEIGHT / 2, 200, 100}, {0, 0}, BLACK, WHITE, GREEN, 5, "Play Again")),
+	back_to_intro_button_(BasicButton({SCREEN_WIDTH / 2 - 250, SCREEN_HEIGHT / 2, 200, 100}, {0, 0}, BLACK, GAINSBORO, RED, 5, "Quit")),
+	player_to_move_changed_(true),
+	gofy_({0, 365}, {0, 0}, {0, 0, 0, 0}, {0, 0, 287, 365}, nullptr, gofy)
 {
 	std::random_device seeder;
 	rd_.seed(seeder());
@@ -513,17 +517,30 @@ int PlayingState::pickBestMove(int piece) {
 void PlayingState::win(bool red_won) {
 	if (game_mode_ != game_mode::ONE_PLAYER) {
 		if (red_won) {
+			win_text_.openFont("res/fixedsys.ttf", 50);
 			win_text_.loadFontTexture(RED, "Player 1 wins!");
 			printf("RED WIN\n");
 		} else {
+			win_text_.openFont("res/fixedsys.ttf", 50);
 			win_text_.loadFontTexture(BLUE, "Player 2 wins!");
 			printf("BLUE WIN\n");
 		}
 	} else {
 		if (red_won) {
-			win_text_.loadFontTexture(RED, "Player wins!");
+			if ((rd_() % 3) == 0 && !goofy_ai_) {
+				win_text_.openFont("res/fixedsys.ttf", 30);
+				win_text_.loadFontTexture(RED, "Hold down SHIFT when clicking \"Can beat\" for GOOFY ai!");
+			} else {
+				win_text_.openFont("res/fixedsys.ttf", 50);
+				win_text_.loadFontTexture(RED, "Player wins!");
+			}
 			printf("RED WIN\n");
+		} else if (goofy_ai_) {
+			win_text_.openFont("res/fixedsys.ttf", 80);
+			win_text_.loadFontTexture(DISNEY_GOOFY_COLOR, "Gawrsh");
+			printf("GOOFY WIN\n");
 		} else {
+			win_text_.openFont("res/fixedsys.ttf", 50);
 			win_text_.loadFontTexture(BLUE, "AI wins!");
 			printf("BLUE WIN\n");
 		}
@@ -780,6 +797,9 @@ void PlayingState::update(Game& game) {
 	}
 	if (drawn_) {
 		window.render(draw_text_, true);
+	}
+	if (goofy_ai_) {
+		window.render(gofy_.renderFgRectInfo(), gofy_.getFgTex());
 	}
 	window.display();
 	window.showWindow();
