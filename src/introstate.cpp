@@ -61,13 +61,16 @@ void IntroState::handleInput(Game &game, const SDL_Event &event) {
 						if (state[SDL_SCANCODE_RCTRL] || state[SDL_SCANCODE_LCTRL]) {
 							turbo_ai = true;
 						}
-						game.playingState(game_mode::ONE_PLAYER, goofy_ai, turbo_ai);
+						game.playingState(game_mode::ONE_PLAYER, false, goofy_ai, turbo_ai);
+					}
+					if (cant_beat_button_.clicked(mouse_x_, mouse_y_)) {
+						game.playingState(game_mode::ONE_PLAYER, true, false, false, GAINSBORO);
 					}
 					if (two_player_button_.clicked(mouse_x_, mouse_y_)) {
-						game.playingState(game_mode::TWO_PLAYER);
+						game.playingState(game_mode::TWO_PLAYER, false);
 					}
 					if (internet_play_button_.clicked(mouse_x_, mouse_y_)) {
-						game.playingState(game_mode::ONLINE);
+						game.playingState(game_mode::ONLINE, false);
 					}
 				}
 				mouse_down_ = false;

@@ -72,6 +72,7 @@ player_to_move_changed_(true)
 
 	colors_ = {BUBBLE, SKY_BLUE, MODS_BLUE, GAINSBORO, CLASSIC_BACKGROUND, NEW_BACKGROUND, RED, GREEN, BLUE, CYAN, PEACH, PURPLE, ORANGE_RED, WHITE, BLACK, PASTEL_BLUE, LIME_GREEN};
 	color_index_location_ = 0;
+	current_color_ = BUBBLE;
 
 	if (RANDOM_PLAYER_TO_MOVE) {
 		randomPlayerToMove();
@@ -81,6 +82,10 @@ player_to_move_changed_(true)
 	resetGame();
 }
 
+void PlayingState::changeColor(SDL_Color color) {
+	current_color_ = color;
+}
+
 void PlayingState::cycleColor(bool backward) {
 	if (SDL_GetTicks() - color_cycle_ticks_ > COLOR_CYCLE_SPEED) {
 		if (backward) {
@@ -88,11 +93,13 @@ void PlayingState::cycleColor(bool backward) {
 			if (color_index_location_ < 0) {
 				color_index_location_ = colors_.size() - 1;
 			}
+			current_color_ = colors_[color_index_location_];
 		} else {
 			color_index_location_++;
 			if (color_index_location_ > colors_.size() - 1) {
 				color_index_location_ = 0;
 			}
+			current_color_ = colors_[color_index_location_];
 		}
 		color_cycle_ticks_ = SDL_GetTicks();
 	}
@@ -167,12 +174,15 @@ void PlayingState::aiMove() {
 		printf("Goofy AI: %d\n", col);
 		placeToken(col, board_, true, AI_PIECE);
 	} else {
-		//int col;
-		//int minimax_score;
-		//col = pickBestMove(AI_PIECE);
-		auto [col, minimax_score] = minimax(board_, SEARCH_DEPTH, INT_MIN, INT_MAX, true);
-		placeToken(col, board_, true, AI_PIECE);
-		printf("AI moves: %d\n\n", col);
+		if (minimax_ai_) {
+			auto [col, minimax_score] = minimax(board_, SEARCH_DEPTH, INT_MIN, INT_MAX, true);
+			placeToken(col, board_, true, AI_PIECE);
+			printf("AI moves: %d\n\n", col);
+		} else {
+			int col = pickBestMove(AI_PIECE);
+			placeToken(col, board_, true, AI_PIECE);
+			printf("AI moves: %d\n\n", col);
+		}
 	}
 }
 
@@ -611,6 +621,13 @@ void PlayingState::setTurboAi(bool turbo) {
 	turbo_ai_ = turbo;
 }
 
+void PlayingState::setMinimaxAi(bool minimax) {
+	if (minimax) {
+		printf("minimax");
+	}
+	minimax_ai_ = minimax;
+}
+
 void PlayingState::handleInput(Game& game, const SDL_Event& event) {
 		switch (event.type) {
 			case SDL_QUIT:
@@ -713,7 +730,7 @@ void PlayingState::update(Game& game) {
 	if (game_mode_ == game_mode::ONE_PLAYER) {
 		aiMove();
 	}
-	window.clear(colors_[color_index_location_], 0xFF);
+	window.clear(current_color_, 0xFF);
 
 	//text to show which player's move it is
 	if (player_to_move_changed_) {

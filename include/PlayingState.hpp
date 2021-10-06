@@ -22,6 +22,8 @@ public:
 	void setGameMode(game_mode mode);
 	void setGoofyAi(bool goofy);
 	void setTurboAi(bool turbo);
+	void setMinimaxAi(bool minimax);
+	void changeColor(SDL_Color color);
 	void cycleColor(bool backward);
 	void randomPlayerToMove();
 	void nextPlayerToMove(bool force = false);
@@ -54,9 +56,11 @@ private:
 	game_mode game_mode_;
 	bool goofy_ai_;
 	bool turbo_ai_;
+	bool minimax_ai_;
 	int next_ai_move_;
 	int color_index_location_;
 	std::vector<SDL_Color> colors_;
+	SDL_Color current_color_;
 	Uint32 color_cycle_ticks_;
 	bool won_;
 	bool drawn_;

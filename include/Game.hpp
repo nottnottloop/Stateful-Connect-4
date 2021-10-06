@@ -13,7 +13,7 @@ public:
 
 	void setState(GameState *state);
 	void introState();
-	void playingState(game_mode mode, bool goofy=false, bool turbo=false);
+	void playingState(game_mode mode, bool minimax, bool goofy=false, bool turbo=false, SDL_Color color=BUBBLE);
 	GameState *getState(GameState *state);
 
 	bool quit_;

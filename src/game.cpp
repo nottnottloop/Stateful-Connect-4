@@ -3,6 +3,7 @@
 #include "GameState.hpp"
 #include "IntroState.hpp"
 #include "PlayingState.hpp"
+#include "Constants.hpp"
 
 Game::Game() {
 	quit_ = false;
@@ -29,10 +30,13 @@ void Game::introState() {
 }
 
 //set the state to playing with a given game mode
-void Game::playingState(game_mode mode, bool goofy, bool turbo) {
+void Game::playingState(game_mode mode, bool minimax, bool goofy, bool turbo, SDL_Color color) {
 	playingstate_->setGameMode(mode);
+	playingstate_->setMinimaxAi(minimax);
 	playingstate_->setGoofyAi(goofy);
 	playingstate_->setTurboAi(turbo);
+	playingstate_->changeColor(color);
+	playingstate_->updatePlayerMoveText();
 	state_ = playingstate_;
 }
 
