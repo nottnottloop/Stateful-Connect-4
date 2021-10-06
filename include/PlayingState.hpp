@@ -33,7 +33,7 @@ public:
 	std::vector<int> getValidLocations();
 	int randomValidColumn();
 	int getNextOpenRow(Board board, int col);
-	void placeToken(int col, Board &board, bool real, int piece = 0);
+	void placeToken(int col, Board &board, bool real, int piece);
 	bool checkWinAndDraw(Board board, int piece, bool real=true);
 	int evaluateWindow(Window window, int piece);
 	int scorePosition(Board &board, int piece);

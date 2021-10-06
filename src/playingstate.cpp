@@ -145,10 +145,15 @@ SDL_Texture *PlayingState::getArrowTex() {
 //the 2 player, same computer code was written first so this allows that code to remain untouched
 void PlayingState::tryToPlaceToken(int col) {
 	if (game_mode_ == game_mode::TWO_PLAYER) {
-		placeToken(col, board_, true);
+		if (player2_to_move_) {
+			placeToken(col, board_, true, AI_PIECE);
+		} else {
+			placeToken(col, board_, true, PLAYER_PIECE);
+		}
 	} else {
+		//if the bot/internet player isn't moving
 		if (!player2_to_move_) {
-			placeToken(col, board_, true);
+			placeToken(col, board_, true, PLAYER_PIECE);
 		}
 	}
 }
@@ -160,13 +165,13 @@ void PlayingState::aiMove() {
 	if (goofy_ai_) {
 		int col = rd_() % NUM_COLS;
 		printf("Goofy AI: %d\n", col);
-		placeToken(col, board_, true);
+		placeToken(col, board_, true, AI_PIECE);
 	} else {
 		//int col;
 		//int minimax_score;
 		//col = pickBestMove(AI_PIECE);
 		auto [col, minimax_score] = minimax(board_, SEARCH_DEPTH, INT_MIN, INT_MAX, true);
-		placeToken(col, board_, true);
+		placeToken(col, board_, true, AI_PIECE);
 		printf("AI moves: %d\n\n", col);
 	}
 }
@@ -214,18 +219,15 @@ void PlayingState::placeToken(int col, Board &board, bool real, int piece) {
 	}
 	bool row_set = false;
 	int row;
-	for (int i = 0; i < NUM_ROWS; i++) {
-		if (board[i][col] != 0) {
-			row = i - 1;
-			if (row < 0) {
-				return;
-			}
+	for (int r = 5; r > -1; r--) {
+		if (board[r][col] == EMPTY_PIECE) {
+			row = r;
 			row_set = true;
 			break;
 		}
 	}
 	if (!row_set) {
-		row	= NUM_ROWS - 1;
+		return;
 	}
 
 	board[row][col] = piece;
@@ -488,7 +490,7 @@ int PlayingState::pickBestMove(int piece) {
 			continue;
 		}
 		auto temp_board = board_;
-		placeToken(c, temp_board, false);
+		placeToken(c, temp_board, false, AI_PIECE);
 		int score = scorePosition(temp_board, piece);
 		if (score > best_score) {
 			best_score = score;

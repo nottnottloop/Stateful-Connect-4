@@ -14,6 +14,8 @@ constexpr int SCREEN_HEIGHT = 768;
 
 constexpr int EMPTY_PIECE = 0;
 constexpr int PLAYER_PIECE = 1;
+//actually, player two is the AI piece
+//i'm not going to search and replace the term out though, i'm used to it
 constexpr int AI_PIECE = 2;
 
 constexpr int SEARCH_DEPTH = 2;
