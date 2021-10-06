@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <SDL.h>
 #include <random>
 #include <algorithm>
@@ -72,7 +73,11 @@ player_to_move_changed_(true)
 	colors_ = {BUBBLE, SKY_BLUE, MODS_BLUE, GAINSBORO, CLASSIC_BACKGROUND, NEW_BACKGROUND, RED, GREEN, BLUE, CYAN, PEACH, PURPLE, ORANGE_RED, WHITE, BLACK, PASTEL_BLUE, LIME_GREEN};
 	color_index_location_ = 0;
 
-	randomPlayerToMove();
+	if (RANDOM_PLAYER_TO_MOVE) {
+		randomPlayerToMove();
+	} else {
+		player2_to_move_ = false;
+	}
 	resetGame();
 }
 
@@ -160,7 +165,7 @@ void PlayingState::aiMove() {
 		//int col;
 		//int minimax_score;
 		//col = pickBestMove(AI_PIECE);
-		auto [col, minimax_score] = minimax(board_, 2, true);
+		auto [col, minimax_score] = minimax(board_, SEARCH_DEPTH, INT_MIN, INT_MAX, true);
 		placeToken(col, board_, true);
 		printf("AI moves: %d\n\n", col);
 	}
@@ -222,18 +227,18 @@ void PlayingState::placeToken(int col, Board &board, bool real, int piece) {
 	if (!row_set) {
 		row	= NUM_ROWS - 1;
 	}
-	if (player2_to_move_ || piece == AI_PIECE) {
-		board[row][col] = 2;
-		if (real) {
-			board_entities_[row][col].setFgTex(blue_tex_);
-		}
-	} else {
-		board[row][col] = 1;
-		if (real) {
-			board_entities_[row][col].setFgTex(red_tex_);
-		}
-	}
+
+	board[row][col] = piece;
+
 	if (real) {
+		switch (piece) {
+			case PLAYER_PIECE:
+				board_entities_[row][col].setFgTex(red_tex_);
+				break;
+			case AI_PIECE:
+				board_entities_[row][col].setFgTex(blue_tex_);
+				break;
+		}
 		board_entities_[row][col].setVisible();
 		player_to_move_changed_ = true;
 		if (player2_to_move_) {
@@ -409,7 +414,7 @@ bool PlayingState::isTerminalNode(Board board) {
 	return (checkWinAndDraw(board, PLAYER_PIECE, false)) || (checkWinAndDraw(board, AI_PIECE, false));
 }
 
-std::array<int, 2> PlayingState::minimax(Board board, int depth, bool maximising_player) {
+std::array<int, 2> PlayingState::minimax(Board board, int depth, int alpha, int beta, bool maximising_player) {
 	std::vector<int> valid_locations = getValidLocations();
 	bool is_terminal = isTerminalNode(board);
 	if (depth == 0 || is_terminal) {
@@ -432,10 +437,15 @@ std::array<int, 2> PlayingState::minimax(Board board, int depth, bool maximising
 		for (int i = 0; i < valid_locations.size(); i++) {
 			Board temp_board = board;
 			placeToken(valid_locations[i], temp_board, false, AI_PIECE);
-			auto [throwaway, new_score] =  minimax(temp_board, depth - 1, false);
+			auto [throwaway, new_score] =  minimax(temp_board, depth - 1, alpha, beta, false);
+			debugPrintAi(maximising_player, depth, i, new_score);
 			if (new_score > value) {
 				value = new_score;
 				column = valid_locations[i];
+			}
+			alpha = std::max(alpha, value);
+			if (alpha >= beta) {
+				break;
 			}
 		}
 		return {column, value};
@@ -446,13 +456,27 @@ std::array<int, 2> PlayingState::minimax(Board board, int depth, bool maximising
 		for (int i = 0; i < valid_locations.size(); i++) {
 			Board temp_board = board;
 			placeToken(valid_locations[i], temp_board, false, PLAYER_PIECE);
-			auto [throwaway, new_score] = minimax(temp_board, depth - 1, true);
+			auto [throwaway, new_score] = minimax(temp_board, depth - 1, alpha, beta, true);
+			debugPrintAi(maximising_player, depth, i, new_score);
 			if (new_score < value) {
 				value = new_score;
 				column = valid_locations[i];
 			}
+			beta = std::min(beta, value);
+			if (alpha >= beta) {
+				break;
+			}
 		}
 		return {column, value};
+	}
+}
+
+void PlayingState::debugPrintAi(bool maximising, int depth, int column, int new_score) {
+	if (DEBUG_PRINT) {
+		std::ofstream file;
+		file.open("c++connect4.txt", std::ios::app);
+		file << "Maximising: " << maximising << ", Depth: " << depth << ", Column: " << column << ", New Score: " << new_score << std::endl;
+		file.close();
 	}
 }
 
@@ -505,6 +529,17 @@ void PlayingState::resetGame() {
 			board_entities_[i][j].setInvisible();
 			board_[i][j] = 0;
 		}
+	}
+	if (AI_TUNING) {
+		board_[5][3] = PLAYER_PIECE;
+		board_[4][3] = AI_PIECE;
+		board_[5][4] = PLAYER_PIECE;
+		board_entities_[5][3].setVisible();
+		board_entities_[5][3].setFgTex(red_tex_);
+		board_entities_[4][3].setVisible();
+		board_entities_[4][3].setFgTex(blue_tex_);
+		board_entities_[5][4].setVisible();
+		board_entities_[5][4].setFgTex(red_tex_);
 	}
 	won_ = false;
 	drawn_ = false;

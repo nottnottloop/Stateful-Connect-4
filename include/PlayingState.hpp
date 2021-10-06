@@ -38,13 +38,14 @@ public:
 	int evaluateWindow(Window window, int piece);
 	int scorePosition(Board &board, int piece);
 	bool isTerminalNode(Board board);
-	std::array<int, 2> minimax(Board board, int depth, bool maximising_player);
+	std::array<int, 2> minimax(Board board, int depth, int alpha, int beta, bool maximising_player);
 	int pickBestMove(int piece);
 	void win(bool red_won);
 	void draw();
 	void resetGame();
 	bool checkValidMouseLocation();
 	int parseMouseLocation();
+	void debugPrintAi(bool maximising, int depth, int column, int new_score);
 #ifdef DEBUG_CONTROLS
 	void nearlyFillBoard();
 #endif

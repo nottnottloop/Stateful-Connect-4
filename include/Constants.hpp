@@ -16,7 +16,12 @@ constexpr int EMPTY_PIECE = 0;
 constexpr int PLAYER_PIECE = 1;
 constexpr int AI_PIECE = 2;
 
-constexpr bool PRINT_EVAL = true;
+constexpr int SEARCH_DEPTH = 2;
+
+//constexpr bool DEBUG_PRINT = true;
+constexpr bool DEBUG_PRINT = false;
+constexpr bool RANDOM_PLAYER_TO_MOVE = false;
+constexpr bool AI_TUNING = false;
 
 constexpr int COLOR_CYCLE_SPEED = 200;
 
